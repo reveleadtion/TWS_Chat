@@ -182,7 +182,7 @@ input.error{border-color:var(--urgent)}
         <div class="h-dot"></div>
         <div class="h-label">Studio Guide</div>
       </div>
-      <div class="h-reply">Replies instantly</div>
+      <div class="h-reply">Replies Instantly</div>
     </div>
     <button id="iframe-close" aria-label="Close" onclick="window.parent.postMessage({type:'tws_close_panel'},'*')">
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M12 4L4 12M4 4l8 8" stroke="#6B6E6A" stroke-width="1.8" stroke-linecap="round"/></svg>
@@ -262,7 +262,7 @@ const INCLUDES = {
 
 const PROCESS_STEPS = {
   'Maternity':         [['Planning call','We talk through your vision, timing, and location. Nothing is left to chance.'],['Your session day','Studio, in-home, or outdoor — your call. Hair & makeup and gown styling ready for you.'],['Gallery review together','We narrow your gallery to your true favorites. You always decide.'],['Delivery & display','Prints, albums, wall art. We help you actually display your story.']],
-  'Newborn':           [['Pre-birth consultation','We connect before baby arrives to plan your session and lock in your date.'],['Session within 5–14 days after birth','The ideal newborn window — curly, sleepy, perfectly fresh. *Note: If you have a preamie, your timeline may be delayed'],['Gallery review together','We identify your favorites together and build your collection around them.'],['Your keepsakes delivered','Prints, albums, and wall art crafted to last a lifetime.']],
+  'Newborn':           [['Pre-birth consultation','We connect before baby arrives to plan your session and lock in your date.'],['Session within 5–14 days from birth','The ideal newborn window — curly, sleepy, perfectly fresh.'],['Gallery review together','We identify your favorites together and build your collection around them.'],['Your keepsakes delivered','Prints, albums, and wall art crafted to last a lifetime.']],
   'Family':            [['Discovery call','We talk through your family dynamic, location preferences, and what you want to capture.'],['Your session day','Studio or the location that means something to your family.'],['Gallery review together','You tell us your favorites — we build your collection from there.'],['Prints for your walls','Real printed photos that actually end up where they belong.']],
   'Seniors':           [['Style & planning session','We plan your looks, locations, and the story we want to tell together.'],['Your session day','Studio and/or outdoor locations — usually 2–3 looks.'],['Gallery review','You pick your favorites. We build your senior collection around them.'],['Announcement-ready','Cards, prints, and digital files ready for everything ahead.']],
   'Branding':          [['Brand discovery call','We talk through your brand personality, use cases, and what images you actually need.'],['Your brand session','Studio, on-location, or both. Multiple looks and settings.'],['Curated delivery','A refined set of on-brand images — not 600 to sort through yourself.'],['Usage guidance','We help you figure out which images go where.']],
@@ -471,11 +471,20 @@ function addConfirm(status, session) {
   appendMsg(row);
 }
 
-function addNotAFit() {
+function addNotAFit(isNewborn) {
   const row = makeRow('studio');
   row.appendChild(makeAvatar());
   const c = document.createElement('div');
   c.className = 'card card-petite fade-up';
+  const timeText = isNewborn
+    ? 'Up to 90-minute studio session<span>More time to work with baby at their own pace — no rushing</span>'
+    : 'Up to 45-minute studio session<span>Downtown Rochester studio — multiple wardrobe changes welcome</span>';
+  const hmua = isNewborn
+    ? 'No hair &amp; makeup — more session time instead<span>Additional time lets us follow baby\'s lead without any rush</span>'
+    : 'Complimentary professional hair &amp; makeup<span>Touch-ups on arrival — you arrive camera-ready and leave stunning</span>';
+  const scarcityText = isNewborn
+    ? 'Newborn Petite Sessions are scheduled around existing bookings — reach out to check availability.'
+    : 'Petite Sessions are held one day per month — spots are limited and go quickly.';
   c.innerHTML = `
     <div class="card-label">A recommendation from Jasmine</div>
     <div class="petite-intro">Based on what you're looking for, our Petite Session might be a beautiful fit — a streamlined studio experience designed for portraits without the full production day.</div>
@@ -484,13 +493,31 @@ function addNotAFit() {
       <div class="petite-was">Regular $990</div>
     </div>
     <div class="petite-items">
-      <div class="petite-item"><div class="petite-check">✓</div><div class="petite-item-text">Complimentary professional hair &amp; makeup<span>Touch-ups on arrival — you arrive camera-ready and leave stunning</span></div></div>
-      <div class="petite-item"><div class="petite-check">✓</div><div class="petite-item-text">Up to 45-minute studio session<span>Downtown Rochester studio — multiple wardrobe changes welcome</span></div></div>
+      <div class="petite-item"><div class="petite-check">✓</div><div class="petite-item-text">${hmua}</div></div>
+      <div class="petite-item"><div class="petite-check">✓</div><div class="petite-item-text">${timeText}</div></div>
       <div class="petite-item"><div class="petite-check">✓</div><div class="petite-item-text">2 high-resolution digital images included<span>Additional images available — buy 2, get 1 free</span></div></div>
-      <div class="petite-item"><div class="petite-check">✓</div><div class="petite-item-text">Portraits for 1 person</div></div>
+      <div class="petite-item"><div class="petite-check">✓</div><div class="petite-item-text">Portraits for 1 person — studio only</div></div>
     </div>
-    <div class="petite-note">Petite Sessions are held one day per month — spots are limited and go quickly.</div>
+    <div class="petite-note">${scarcityText}</div>
     <a href="https://twowildsoulsphotography.com/specials" target="_blank" class="naf-link">View availability &amp; book your spot →</a>`;
+  row.appendChild(c);
+  appendMsg(row);
+}
+
+function addExtendedFamily() {
+  const row = makeRow('studio');
+  row.appendChild(makeAvatar());
+  const c = document.createElement('div');
+  c.className = 'card card-petite fade-up';
+  c.innerHTML = `
+    <div class="card-label">Extended Family Sessions</div>
+    <div class="petite-intro">Extended family sessions are some of the most meaningful work we do — multiple generations, one beautiful story. Here's how the investment works.</div>
+    <div class="petite-items">
+      <div class="petite-item"><div class="petite-check">✓</div><div class="petite-item-text">Weekday sessions — starting at $1,990<span>Most families find weekdays the easiest to coordinate</span></div></div>
+      <div class="petite-item"><div class="petite-check">✓</div><div class="petite-item-text">Weekend sessions — starting at $2,290<span>Premium availability for families who need the flexibility</span></div></div>
+    </div>
+    <div class="petite-note">Most extended families split the investment between households — three families sharing a weekday session works out to around $665 each. Everyone walks away with the full gallery. It's one of the smartest ways to make it work.</div>
+    <a href="https://twowildsoulsphotography.com/metro-detroit-family-photography" target="_blank" class="naf-link">Learn more &amp; get on Jasmine's list →</a>`;
   row.appendChild(c);
   appendMsg(row);
 }
@@ -554,7 +581,9 @@ async function runQueue() {
     } else if (item.type === 'confirm') {
       addConfirm(item.status, item.session);
     } else if (item.type === 'notafit') {
-      addNotAFit();
+      addNotAFit(item.isNewborn);
+    } else if (item.type === 'extended_family') {
+      addExtendedFamily();
     } else if (item.type === 'form') {
       addForm();
     } else if (item.type === 'chips') {
@@ -619,14 +648,16 @@ function goProcess() {
 }
 
 function goValueQ() {
+  const isFamily = state.sessionType === 'Family';
+  const opts = [
+    { label: 'Heirloom prints and artwork for our home',  action: 'value_heirloom' },
+    { label: 'The full experience — styling, everything', action: 'value_full' },
+  ];
+  if (!isFamily) opts.push({ label: "I'd prefer to keep things simple", action: 'value_simple' });
   Q([
     ...say("One last thing before your investment details —", SPEEDS.short),
     ...say("What matters most to you about these photos?", SPEEDS.short),
-    { type: 'chips', opts: [
-      { label: 'Heirloom prints and artwork for our home',  action: 'value_heirloom' },
-      { label: 'The full experience — styling, everything', action: 'value_full' },
-      { label: "I'd prefer to keep things simple",          action: 'value_simple' },
-    ]},
+    { type: 'chips', opts },
   ]);
 }
 
@@ -825,17 +856,49 @@ function handleOpt(opt) {
   // VALUE QUALIFIER
   else if (a === 'value_simple') {
     state.valueType = 'not_a_fit';
-    Q([
-      ...say("Got it — I actually have something that might be perfect for you.", SPEEDS.short),
-      ...showCard('notafit', {}, 500),
-    ]);
+    if (state.sessionType === 'Newborn') {
+      Q([
+        ...say("Got it — I actually have something that might be a great fit.", SPEEDS.short),
+        ...showCard('notafit', { isNewborn: true }, 500),
+      ]);
+    } else {
+      Q([
+        ...say("Got it — I actually have something that might be perfect for you.", SPEEDS.short),
+        ...showCard('notafit', { isNewborn: false }, 500),
+      ]);
+    }
     isDone = true;
-  } else if (a === 'value_heirloom' || a === 'value_keepsake' || a === 'value_digital' || a === 'value_full') {
-    state.valueType = a;
+  }
+
+  // FAMILY SIZE BRANCH
+  else if (a === 'family_immediate') {
     Q([
       ...say("That's exactly the kind of session Jasmine loves creating.", SPEEDS.short),
       { type: 'fn', fn: goCapture },
     ]);
+  } else if (a === 'family_extended') {
+    Q([
+      ...say("Extended family sessions are some of the most treasured we create.", SPEEDS.short),
+      ...showCard('extended_family', {}, 500),
+    ]);
+    isDone = true;
+  } else if (a === 'value_heirloom' || a === 'value_keepsake' || a === 'value_digital' || a === 'value_full') {
+    state.valueType = a;
+    if (state.sessionType === 'Family') {
+      Q([
+        ...say("Love it. One quick question —", SPEEDS.short),
+        ...say("Is this for your immediate family, or are you bringing extended family together?", SPEEDS.short),
+        { type: 'chips', opts: [
+          { label: 'Immediate family — up to 8 people',      action: 'family_immediate' },
+          { label: 'Extended family — multiple households',  action: 'family_extended' },
+        ]},
+      ]);
+    } else {
+      Q([
+        ...say("That's exactly the kind of session Jasmine loves creating.", SPEEDS.short),
+        { type: 'fn', fn: goCapture },
+      ]);
+    }
   }
 }
 
