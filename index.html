@@ -182,7 +182,7 @@ input.error{border-color:var(--urgent)}
         <div class="h-dot"></div>
         <div class="h-label">Studio Guide</div>
       </div>
-      <div class="h-reply">Replies Instantly</div>
+      <div class="h-reply">Replies instantly</div>
     </div>
     <button id="iframe-close" aria-label="Close" onclick="window.parent.postMessage({type:'tws_close_panel'},'*')">
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M12 4L4 12M4 4l8 8" stroke="#6B6E6A" stroke-width="1.8" stroke-linecap="round"/></svg>
@@ -262,7 +262,7 @@ const INCLUDES = {
 
 const PROCESS_STEPS = {
   'Maternity':         [['Planning call','We talk through your vision, timing, and location. Nothing is left to chance.'],['Your session day','Studio, in-home, or outdoor — your call. Hair & makeup and gown styling ready for you.'],['Gallery review together','We narrow your gallery to your true favorites. You always decide.'],['Delivery & display','Prints, albums, wall art. We help you actually display your story.']],
-  'Newborn':           [['Pre-birth consultation','We connect before baby arrives to plan your session and lock in your date.'],['Session within 5–14 days from birth','The ideal newborn window — curly, sleepy, perfectly fresh.'],['Gallery review together','We identify your favorites together and build your collection around them.'],['Your keepsakes delivered','Prints, albums, and wall art crafted to last a lifetime.']],
+  'Newborn':           [['Pre-birth consultation','We connect before baby arrives to plan your session and lock in your date.'],['Session within 5–14 days','The ideal newborn window — curly, sleepy, perfectly fresh.'],['Gallery review together','We identify your favorites together and build your collection around them.'],['Your keepsakes delivered','Prints, albums, and wall art crafted to last a lifetime.']],
   'Family':            [['Discovery call','We talk through your family dynamic, location preferences, and what you want to capture.'],['Your session day','Studio or the location that means something to your family.'],['Gallery review together','You tell us your favorites — we build your collection from there.'],['Prints for your walls','Real printed photos that actually end up where they belong.']],
   'Seniors':           [['Style & planning session','We plan your looks, locations, and the story we want to tell together.'],['Your session day','Studio and/or outdoor locations — usually 2–3 looks.'],['Gallery review','You pick your favorites. We build your senior collection around them.'],['Announcement-ready','Cards, prints, and digital files ready for everything ahead.']],
   'Branding':          [['Brand discovery call','We talk through your brand personality, use cases, and what images you actually need.'],['Your brand session','Studio, on-location, or both. Multiple looks and settings.'],['Curated delivery','A refined set of on-brand images — not 600 to sort through yourself.'],['Usage guidance','We help you figure out which images go where.']],
@@ -759,30 +759,57 @@ function handleOpt(opt) {
   // NEWBORN
   else if (a === 'nb_born') {
     Q([
-      ...say("Welcome to the world, little one! How old is baby right now?", SPEEDS.short),
+      ...say("Congratulations! How old is baby right now?", SPEEDS.short),
       { type: 'chips', opts: [
-        { label: 'Under 2 weeks',      action: 'nb_ideal' },
-        { label: '2 – 4 weeks',        action: 'nb_ok' },
-        { label: '4 weeks – 2 months', action: 'nb_late' },
-        { label: 'Over 2 months',      action: 'nb_late' },
+        { label: 'Less than 1 week old',  action: 'nb_urgent' },
+        { label: '1 week or older',       action: 'nb_toolate' },
+        { label: 'Premie — born early',   action: 'nb_premie' },
       ]},
     ]);
-  } else if (a === 'nb_ideal' || a === 'nb_ok') {
-    state.timingStatus = 'contact_now'; state.timingNote = 'Newborn in ideal window';
+  } else if (a === 'nb_urgent') {
+    state.timingStatus = 'contact_now'; state.timingNote = 'Newborn under 1 week — book immediately';
     Q([
-      ...say("You're right in the perfect window — this is exactly when newborn magic happens.", SPEEDS.text),
+      ...say("You need to book right now — this is not an exaggeration. 🤍", SPEEDS.short),
+      ...say("Posed newborn portraits are only possible between 5–14 days old. We need at least a week to coordinate everything, which means today is the day to reach out.", SPEEDS.text),
+      ...say("Jasmine personally reviews every newborn inquiry. Let's get you on her list immediately.", SPEEDS.short),
       { type: 'fn', fn: goEducation },
     ]);
-  } else if (a === 'nb_late') {
-    state.timingStatus = 'too_late'; state.timingNote = 'Newborn past ideal window';
+  } else if (a === 'nb_toolate') {
+    state.timingStatus = 'too_late'; state.timingNote = 'Newborn 1 week+ — posed window closed';
     Q([
-      ...say("The ideal newborn window is under 4 weeks, but Jasmine does beautiful milestone sessions too. Let's see if we're the right fit.", SPEEDS.text),
+      ...say("The window for posed newborn portraits has passed — those require baby to be 5–14 days old, and we need at least a week to prepare.", SPEEDS.long),
+      ...say("The good news: Jasmine does beautiful lifestyle family sessions that capture this exact season. Baby, your family, your home — real and natural.", SPEEDS.long),
+      ...say("It's a completely different experience and just as meaningful. Want to explore that instead?", SPEEDS.short),
+      { type: 'chips', opts: [
+        { label: 'Yes — tell me about lifestyle sessions', action: 'nb_lifestyle_yes' },
+        { label: 'No thanks',                              action: 'nb_lifestyle_no'  },
+      ]},
+    ]);
+  } else if (a === 'nb_premie') {
+    state.timingStatus = 'contact_now'; state.timingNote = 'Premie — timeline varies';
+    Q([
+      ...say("Congratulations on your little one — premies have their own timeline and that's completely okay. 🤍", SPEEDS.text),
+      ...say("The ideal window for posed portraits is based on baby's adjusted age, size, and weight rather than birth date. Jasmine reviews every premie inquiry personally to make sure the timing is right.", SPEEDS.text),
+      ...say("Let's get your information to her so she can reach out directly.", SPEEDS.short),
       { type: 'fn', fn: goEducation },
     ]);
+  } else if (a === 'nb_lifestyle_yes') {
+    state.sessionType = 'Family'; state.timingStatus = 'contact_now'; state.timingNote = 'Redirected from newborn — lifestyle family';
+    Q([
+      ...say("Let's make sure Jasmine has everything she needs to reach out.", SPEEDS.short),
+      { type: 'fn', fn: goEducation },
+    ]);
+  } else if (a === 'nb_lifestyle_no') {
+    Q([
+      ...say("Completely understood. If anything changes or you have a future session in mind, we'd love to have you back. 🤍", SPEEDS.text),
+    ]);
+    isDone = true;
   } else if (a === 'nb_expecting') {
     state.timingStatus = 'contact_now'; state.timingNote = 'Expecting — planning newborn';
     Q([
-      ...say("Perfect timing to plan ahead — the newborn window goes fast. How far out are you?", SPEEDS.short),
+      ...say("Perfect timing — planning ahead is exactly right for newborns. The posed portrait window is 5–14 days from birth, and we need at least a week to coordinate everything.", SPEEDS.long),
+      ...say("If baby arrives early as a premie, their timeline will be based on adjusted age, size, and weight — Jasmine reviews every premie case personally.", SPEEDS.long),
+      ...say("How far out are you?", SPEEDS.short),
       { type: 'chips', opts: [
         { label: 'Due within 4 weeks', action: 'timing_now' },
         { label: '4 – 8 weeks out',    action: 'timing_now' },
