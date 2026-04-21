@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Two Wild Souls · Studio Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F7F5F2;--surface:#ECEAE6;--warm:#F0EDE8;
+  --text:#2E2F2C;--text2:#6B6E6A;--text3:#aaa;
+  --sage:#7C8A5A;--forest:#3F4438;--gold:#C7B27A;
+  --border:#DDD9D3;--faint:rgba(46,47,44,0.08);--urgent:#B03010;
+}
+html,body{height:100%;background:var(--bg);overflow:hidden;-webkit-font-smoothing:antialiased}
+#app{display:flex;flex-direction:column;height:100dvh;max-width:430px;margin:0 auto;background:var(--bg);border-left:1px solid var(--faint);border-right:1px solid var(--faint)}
+
+/* IFRAME CLOSE BUTTON — visible only when embedded */
+#iframe-close{display:none;width:32px;height:32px;border:none;background:none;cursor:pointer;padding:0;align-items:center;justify-content:center;border-radius:50%;transition:background .15s;-webkit-tap-highlight-color:transparent;flex-shrink:0;margin-left:8px}
+#iframe-close:hover{background:rgba(63,68,56,.07)}
+#iframe-close svg{display:block}
+body.in-iframe #iframe-close{display:flex}
+/* iOS keyboard — shrink to visual viewport height */
+body.ios-kb #app{height:var(--vvh,100dvh)}
+
+/* HEADER */
+#header{padding:13px 18px 12px;border-bottom:1px solid var(--faint);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.h-title{font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:400;letter-spacing:.04em;color:var(--text)}
+.h-title em{font-style:italic;color:var(--gold)}
+.h-sub{font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:var(--text2);margin-top:2px}
+.h-right{display:flex;flex-direction:column;align-items:flex-end;gap:3px}
+.h-status{display:flex;align-items:center;gap:5px}
+.h-dot{width:5px;height:5px;border-radius:50%;background:var(--sage);animation:pulse 2.5s ease-in-out infinite}
+.h-label{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--sage)}
+.h-reply{font-size:8.5px;color:var(--text3);letter-spacing:.03em}
+
+/* SCROLL AREA */
+#messages{flex:1;overflow-y:auto;padding:16px 14px 8px;-webkit-overflow-scrolling:touch}
+#messages::-webkit-scrollbar{width:3px}
+#messages::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+
+/* CHIPS */
+#chips{padding:10px 14px 18px;display:flex;flex-wrap:wrap;gap:7px;justify-content:flex-end;border-top:1px solid var(--faint);background:var(--bg);flex-shrink:0}
+#chips.hidden{display:none}
+.chip{background:var(--bg);border:1.5px solid var(--border);border-radius:100px;padding:9px 15px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:300;color:var(--text);cursor:pointer;transition:all .18s;letter-spacing:.01em}
+.chip:hover{background:rgba(124,138,90,.08);border-color:var(--sage);color:var(--forest);font-weight:400}
+
+/* ANIMATIONS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes bounce{0%,60%,100%{transform:translateY(0);opacity:.35}30%{transform:translateY(-4px);opacity:1}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.45}}
+.fade-up{animation:fadeUp .32s cubic-bezier(.22,.61,.36,1) both}
+
+/* BUBBLE WRAPPERS */
+.row{display:flex;gap:8px;align-items:flex-end;margin-bottom:8px}
+.row.studio{flex-direction:row}
+.row.user{flex-direction:row-reverse}
+
+/* AVATAR */
+.avatar{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--forest) 0%,#5a6450 100%);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:11px;color:var(--gold);align-self:flex-end;margin-bottom:2px;box-shadow:0 1px 6px rgba(63,68,56,.22)}
+
+/* TEXT BUBBLES */
+.bubble-text{max-width:80%;padding:10px 14px;border-radius:3px 14px 14px 14px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:300;line-height:1.68;letter-spacing:.01em}
+.bubble-text.studio{background:var(--warm);color:var(--text);border:1px solid var(--border)}
+.bubble-text.user{background:var(--forest);color:var(--bg);border-radius:14px 3px 14px 14px}
+
+/* TYPING */
+.typing-bubble{padding:13px 15px;background:var(--warm);border:1px solid var(--border);border-radius:3px 14px 14px 14px;display:flex;gap:5px;align-items:center}
+.dot{width:5px;height:5px;border-radius:50%;background:var(--text2)}
+.dot:nth-child(1){animation:bounce 1.15s ease-in-out 0s infinite}
+.dot:nth-child(2){animation:bounce 1.15s ease-in-out .18s infinite}
+.dot:nth-child(3){animation:bounce 1.15s ease-in-out .36s infinite}
+
+/* CARD SHARED */
+.card{max-width:85%;border-radius:3px 14px 14px 14px;padding:14px 15px;font-family:'DM Sans',sans-serif}
+.card-label{font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+
+/* TESTIMONIAL CARD */
+.card-testimonial{background:var(--bg);border:1px solid var(--border);border-left:3px solid var(--gold)}
+.card-testimonial .quote{font-family:'Cormorant Garamond',serif;font-size:15px;font-style:italic;color:var(--text);line-height:1.65;margin-bottom:8px;font-weight:300}
+.card-testimonial .attr{font-size:10px;color:var(--text3);letter-spacing:.06em}
+
+/* INCLUDES CARD */
+.card-includes{background:var(--warm);border:1px solid var(--border)}
+.include-row{display:flex;gap:9px;align-items:flex-start;margin-bottom:8px}
+.include-row:last-child{margin-bottom:0}
+.include-dot{width:16px;height:16px;border-radius:50%;background:rgba(124,138,90,.12);border:1px solid rgba(124,138,90,.3);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.include-dot-inner{width:5px;height:5px;border-radius:50%;background:var(--sage)}
+.include-text{font-size:12px;color:var(--text);line-height:1.5;font-weight:300}
+
+/* COMPARISON CARD */
+.card-comparison{max-width:86%;overflow:hidden;border:1px solid var(--border);border-radius:3px 14px 14px 14px;box-shadow:0 2px 12px rgba(0,0,0,.05)}
+.comp-grid{display:grid;grid-template-columns:1fr 1fr}
+.comp-cell{padding:8px 11px;font-size:11px;line-height:1.45}
+.comp-head{background:var(--forest)}
+.comp-head .comp-cell{font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:rgba(199,178,122,.8);font-weight:500}
+.comp-head .comp-cell:first-child{border-right:1px solid rgba(255,255,255,.08)}
+.comp-row-even{background:var(--warm)}
+.comp-row-odd{background:var(--bg)}
+.comp-row-even .comp-cell:first-child,.comp-row-odd .comp-cell:first-child{border-right:1px solid var(--border);color:rgba(176,48,16,.7);text-decoration:line-through;font-weight:300}
+.comp-row-even .comp-cell:last-child,.comp-row-odd .comp-cell:last-child{color:var(--sage);font-weight:400}
+.comp-row-divider{border-bottom:1px solid var(--border)}
+
+/* PROCESS CARD */
+.card-process{background:var(--warm);border:1px solid var(--border)}
+.process-step{display:flex;gap:11px;margin-bottom:12px}
+.process-step:last-child{margin-bottom:0}
+.step-num{font-family:'Cormorant Garamond',serif;font-size:17px;color:var(--gold);flex-shrink:0;line-height:1;margin-top:1px}
+.step-title{font-size:12px;font-weight:500;color:var(--text);margin-bottom:3px;letter-spacing:.01em}
+.step-body{font-size:11px;color:var(--text2);line-height:1.58}
+
+/* QUOTE CARD */
+.card-quote{background:var(--forest);border-radius:3px 14px 14px 14px;padding:16px 17px;position:relative;overflow:hidden}
+.card-quote::before{content:'';position:absolute;top:0;right:0;width:80px;height:80px;background:radial-gradient(circle at 100% 0%,rgba(199,178,122,.12) 0%,transparent 70%)}
+.card-quote .q-label{font-size:8px;letter-spacing:.22em;text-transform:uppercase;color:rgba(199,178,122,.75);margin-bottom:6px;position:relative}
+.card-quote .q-price{font-family:'Cormorant Garamond',serif;font-size:40px;font-weight:300;color:#fff;line-height:1;margin-bottom:3px;position:relative}
+.card-quote .q-pkg{font-size:10px;color:rgba(247,245,242,.4);margin-bottom:14px;letter-spacing:.04em;position:relative}
+.card-quote .q-note{font-size:11.5px;color:rgba(199,178,122,.88);line-height:1.65;border-top:1px solid rgba(255,255,255,.08);padding-top:11px;position:relative}
+
+/* CONFIRM CARD */
+.card-confirm{border-radius:3px 14px 14px 14px;padding:16px 17px;position:relative;overflow:hidden}
+.card-confirm.dark{background:var(--forest)}
+.card-confirm.light{background:var(--warm);border:1px solid var(--border)}
+.card-confirm.dark::before{content:'';position:absolute;top:0;right:0;width:100px;height:100px;background:radial-gradient(circle at 100% 0%,rgba(199,178,122,.1) 0%,transparent 70%)}
+.conf-tag{font-size:8px;letter-spacing:.22em;text-transform:uppercase;margin-bottom:7px;display:flex;align-items:center;gap:6px;position:relative}
+.dark .conf-tag{color:rgba(199,178,122,.75)}
+.light .conf-tag{color:var(--gold)}
+.conf-check{width:14px;height:14px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8px}
+.dark .conf-check{background:rgba(124,138,90,.3);color:var(--sage)}
+.light .conf-check{background:rgba(124,138,90,.15);color:var(--sage)}
+.conf-headline{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:300;line-height:1.15;margin-bottom:7px;position:relative}
+.dark .conf-headline{color:#fff}
+.light .conf-headline{color:var(--text)}
+.conf-body{font-size:12px;line-height:1.68;margin-bottom:10px;position:relative}
+.dark .conf-body{color:rgba(247,245,242,.8)}
+.light .conf-body{color:var(--text2)}
+.conf-sub{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:11px;line-height:1.55;padding-top:9px;position:relative}
+.dark .conf-sub{color:rgba(199,178,122,.82);border-top:1px solid rgba(255,255,255,.08)}
+.light .conf-sub{color:var(--text2);border-top:1px solid var(--border)}
+
+/* PETITE RECOMMENDATION CARD */
+.card-petite{background:var(--warm);border:1px solid var(--border)}
+.petite-intro{font-size:12px;color:var(--text2);line-height:1.68;margin-bottom:13px}
+.petite-price-row{display:flex;align-items:baseline;gap:8px;margin-bottom:12px}
+.petite-price{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:300;color:var(--text);line-height:1}
+.petite-was{font-size:11px;color:var(--text3);text-decoration:line-through;letter-spacing:.02em}
+.petite-items{margin-bottom:13px}
+.petite-item{display:flex;gap:9px;align-items:flex-start;margin-bottom:7px}
+.petite-item:last-child{margin-bottom:0}
+.petite-check{width:15px;height:15px;border-radius:50%;background:rgba(124,138,90,.12);border:1px solid rgba(124,138,90,.3);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;font-size:8px;color:var(--sage)}
+.petite-item-text{font-size:12px;color:var(--text);line-height:1.5;font-weight:300}
+.petite-item-text span{font-size:10.5px;color:var(--text2);display:block;margin-top:1px}
+.petite-note{font-size:10.5px;font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--text2);line-height:1.55;border-top:1px solid var(--border);padding-top:10px;margin-bottom:12px}
+.naf-link{display:block;text-align:center;padding:12px 14px;background:linear-gradient(135deg,var(--forest) 0%,#4d5542 100%);color:var(--bg);border-radius:5px;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;transition:opacity .18s}
+.naf-link:hover{opacity:.85}
+
+/* FORM */
+.card-form{background:var(--warm);border:1px solid var(--border)}
+.form-row{display:flex;gap:7px;margin-bottom:7px}
+.form-row input{flex:1}
+input[type=text],input[type=email],input[type=tel]{width:100%;padding:11px 12px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:300;color:var(--text);background:var(--surface);border-radius:4px;border:1.5px solid var(--border);outline:none;transition:border-color .2s;display:block;margin-bottom:7px}
+input:focus{border-color:var(--sage)}
+input.error{border-color:var(--urgent)}
+.form-error{font-size:10.5px;color:var(--urgent);margin-bottom:9px}
+.form-btn{width:100%;background:linear-gradient(135deg,var(--forest) 0%,#4d5542 100%);color:var(--bg);border:none;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;padding:14px;border-radius:5px;cursor:pointer;transition:all .22s}
+.form-btn:disabled{background:var(--text2);cursor:not-allowed}
+.form-note{font-size:10px;color:var(--text3);text-align:center;margin-top:9px;line-height:1.55}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="header">
+    <div>
+      <div class="h-title">Two Wild <em>Souls</em> Photography</div>
+      <div class="h-sub">Rochester · Metro Detroit</div>
+    </div>
+    <div class="h-right">
+      <div class="h-status">
+        <div class="h-dot"></div>
+        <div class="h-label">Studio Guide</div>
+      </div>
+      <div class="h-reply">Typically replies in minutes</div>
+    </div>
+    <button id="iframe-close" aria-label="Close" onclick="window.parent.postMessage({type:'tws_close_panel'},'*')">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M12 4L4 12M4 4l8 8" stroke="#6B6E6A" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+  <div id="messages"></div>
+  <div id="chips" class="hidden"></div>
+</div>
+
+<script>
+// ─── CONFIG ────────────────────────────────────────────────────────
+let KLAVIYO_PUBLIC_KEY = 'YOUR_PUBLIC_KEY';
+let KLAVIYO_LIST_ID    = 'YOUR_LIST_ID';
+
+// ─── DATA ──────────────────────────────────────────────────────────
+const PRICING = {
+  'Maternity':         { price: '$1,290+', label: 'Custom Session', note: 'Studio, in-home, or outdoor — your choice. Hair & makeup and gown styling available.' },
+  'Newborn':           { price: '$1,290+', label: 'Custom Session', note: 'Studio session with full newborn styling and guided posing.' },
+  'Family':            { price: '$1,290+', label: 'Custom Session', note: 'Studio, outdoor, or in-home location of your choice.' },
+  'Seniors':           { price: '$1,290+', label: 'Custom Session', note: 'Studio plus outdoor or in-home locations. 2–3 looks.' },
+  'Branding':          { price: '$1,290+', label: 'Brand Session',  note: 'Full brand session — studio, on-location, or both. Website, social, and marketing content.' },
+  'Boudoir Maternity': { price: '$1,290+', label: 'Custom Session', note: 'Full boudoir maternity experience. In-studio with gown styling and hair & makeup available.' },
+};
+
+const PROOF_POOLS = {
+  'Maternity': [
+    { quote: '"Our maternity shoot with Jasmine was a magical experience!! From hair and makeup, to a full closet, everything was taken care of."', name: 'Samantha' },
+    { quote: '"I absolutely loved my maternity pictures. They did a wonderful job with my hair and makeup too. She provided dresses with different options... Definitely worth every penny."', name: 'Mariah M.' },
+    { quote: '"I\'m in love with the experience and the photos. She is the best!"', name: 'Yussimil L.' },
+  ],
+  'Newborn': [
+    { quote: '"My daughter\'s newborn shoot with Jasmine was perfect! She is so patient with babies."', name: 'Jessica M.' },
+    { quote: '"Jasmine came to our home and made every step easy — the newborn photos for our twins came out stunning."', name: 'Megan L.' },
+    { quote: '"Jasmine was super patient and excellent to work with!"', name: 'Kim B.' },
+  ],
+  'Family': [
+    { quote: '"Jasmine has gone above and beyond to capture our family! She is such a wonderful soul — it made everything so much more enjoyable."', name: 'Krystal W.' },
+    { quote: '"Our large family had a great photo shoot! Jasmine was great at wrangling everyone and getting smiles. Overall, awesome experience."', name: 'Patricia B.' },
+    { quote: '"She picked an excellent location and did a fantastic job capturing our family."', name: 'Michael D.' },
+  ],
+  'Seniors': [
+    { quote: '"She took so much time with us and made sure everything was perfect. The pictures turned out gorgeous and we could not have been happier."', name: 'Bonnie W.' },
+    { quote: '"She went above and beyond to make the entire experience incredible from start to finish."', name: 'Shaili T.' },
+    { quote: '"Professionally and beautifully photographed our Senior. Love the photos. Highly recommended!"', name: 'Kingsway' },
+  ],
+  'Branding': [
+    { quote: '"She genuinely listened to my insecurities and worked with me — not around them. Her editing? Flawless without looking overdone."', name: 'Courtney' },
+    { quote: '"Her eye for lighting, detail, and emotion is extraordinary. When I saw my final photos, I was genuinely blown away."', name: 'Paula B.' },
+    { quote: '"Jasmine truly listened to what I needed and was able to deliver even more than I expected."', name: 'Yana S.' },
+  ],
+};
+PROOF_POOLS['Boudoir Maternity'] = PROOF_POOLS['Maternity'];
+
+// Track last shown index per genre to avoid immediate repeats
+const proofIndexes = {};
+function getProof(session) {
+  const pool = PROOF_POOLS[session] || PROOF_POOLS['Maternity'];
+  const last = proofIndexes[session] ?? -1;
+  let next;
+  if (pool.length === 1) {
+    next = 0;
+  } else {
+    do { next = Math.floor(Math.random() * pool.length); } while (next === last);
+  }
+  proofIndexes[session] = next;
+  return pool[next];
+}
+
+const INCLUDES = {
+  'Maternity':         ['Professional hair & makeup artist','Designer gown wardrobe','Studio, in-home, or outdoor location','Guided posing from start to finish','Curated gallery review — together'],
+  'Newborn':           ['Full newborn posing & safety guidance','Professionally styled props & wraps','Sibling & family groupings included','Curated gallery review — together','Heirloom print options'],
+  'Seniors':           ['Style & planning session before shoot','Professional hair & makeup artist','Studio and/or outdoor locations','2–3 looks planned around your style','Announcement-ready prints & cards'],
+  'Branding':          ['Brand discovery call — before you book','Multiple wardrobe looks & settings','Studio and/or on-location','Curated image set (not 600 unedited files)','Usage guidance for web, social & marketing'],
+  'Family':            ['Pre-session planning call','Studio or your chosen outdoor location','Guided direction throughout','Curated gallery review — together','Real prints for your walls'],
+  'Boudoir Maternity': ['Private consultation before your session','Professional hair & makeup artist','Designer gown styling','Fully guided, zero pressure atmosphere','Printed albums & wall art available'],
+};
+
+const PROCESS_STEPS = {
+  'Maternity':         [['Planning call','We talk through your vision, timing, and location. Nothing is left to chance.'],['Your session day','Studio, in-home, or outdoor — your call. Hair & makeup and gown styling ready for you.'],['Gallery review together','We narrow your gallery to your true favorites. You always decide.'],['Delivery & display','Prints, albums, wall art. We help you actually display your story.']],
+  'Newborn':           [['Pre-birth consultation','We connect before baby arrives to plan your session and lock in your date.'],['Session within 5–14 days','The ideal newborn window — curly, sleepy, perfectly fresh.'],['Gallery review together','We identify your favorites together and build your collection around them.'],['Your keepsakes delivered','Prints, albums, and wall art crafted to last a lifetime.']],
+  'Family':            [['Discovery call','We talk through your family dynamic, location preferences, and what you want to capture.'],['Your session day','Studio or the location that means something to your family.'],['Gallery review together','You tell us your favorites — we build your collection from there.'],['Prints for your walls','Real printed photos that actually end up where they belong.']],
+  'Seniors':           [['Style & planning session','We plan your looks, locations, and the story we want to tell together.'],['Your session day','Studio and/or outdoor locations — usually 2–3 looks.'],['Gallery review','You pick your favorites. We build your senior collection around them.'],['Announcement-ready','Cards, prints, and digital files ready for everything ahead.']],
+  'Branding':          [['Brand discovery call','We talk through your brand personality, use cases, and what images you actually need.'],['Your brand session','Studio, on-location, or both. Multiple looks and settings.'],['Curated delivery','A refined set of on-brand images — not 600 to sort through yourself.'],['Usage guidance','We help you figure out which images go where.']],
+  'Boudoir Maternity': [['Private consultation','We talk through your comfort level, styling vision, and what this session means to you.'],['Your session day','In-studio. Gown styling and hair & makeup ready for you.'],['Gallery review together','You tell us your favorites. No pressure, no surprises.'],['Your keepsakes','Printed albums, wall art, and digitals — designed to last.']],
+};
+
+const SERVICE_PAGES = {
+  'Maternity':         'https://twowildsoulsphotography.com/metro-detroit-maternity-photography',
+  'Newborn':           'https://twowildsoulsphotography.com/metro-detroit-newborn-photography',
+  'Family':            'https://twowildsoulsphotography.com/metro-detroit-family-photography',
+  'Seniors':           'https://twowildsoulsphotography.com/metro-detroit-senior-photography',
+  'Branding':          'https://twowildsoulsphotography.com/metro-detroit-branding-photography',
+  'Boudoir Maternity': 'https://twowildsoulsphotography.com/metro-detroit-maternity-boudoir-photography',
+};
+
+// ─── STATE ─────────────────────────────────────────────────────────
+const state = { sessionType: null, timingStatus: null, timingNote: null, valueType: null, weeksPreg: null, newbornStatus: null, gradYear: null };
+let queue = [], running = false, isDone = false;
+
+// ─── DOM HELPERS ───────────────────────────────────────────────────
+const $ = id => document.getElementById(id);
+const msgs = $('messages');
+const chips = $('chips');
+
+function scrollDown() { msgs.scrollTop = msgs.scrollHeight; }
+
+function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+function getSpeed() { return window.__twsSpeed === 'fast' ? 0.2 : 1; }
+
+// ─── BUILD ELEMENTS ────────────────────────────────────────────────
+
+function makeAvatar() {
+  const d = document.createElement('div');
+  d.className = 'avatar';
+  d.textContent = 'J';
+  return d;
+}
+
+function makeRow(side) {
+  const d = document.createElement('div');
+  d.className = `row ${side} fade-up`;
+  return d;
+}
+
+function appendMsg(el) {
+  msgs.appendChild(el);
+  scrollDown();
+}
+
+function showTyping() {
+  const row = makeRow('studio');
+  row.id = 'typing-row';
+  row.appendChild(makeAvatar());
+  const b = document.createElement('div');
+  b.className = 'typing-bubble';
+  b.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
+  row.appendChild(b);
+  msgs.appendChild(row);
+  scrollDown();
+}
+
+function hideTyping() {
+  const t = $('typing-row');
+  if (t) t.remove();
+}
+
+function addTextBubble(html, side) {
+  const row = makeRow(side);
+  if (side === 'studio') row.appendChild(makeAvatar());
+  const b = document.createElement('div');
+  b.className = `bubble-text ${side}`;
+  b.innerHTML = html;
+  row.appendChild(b);
+  appendMsg(row);
+}
+
+function addTestimonial(session) {
+  const p = getProof(session);
+  const row = makeRow('studio');
+  row.appendChild(makeAvatar());
+  const c = document.createElement('div');
+  c.className = 'card card-testimonial fade-up';
+  c.innerHTML = `
+    <div class="card-label">From a recent client</div>
+    <div class="quote">${p.quote}</div>
+    <div class="attr">— ${p.name}</div>`;
+  row.appendChild(c);
+  appendMsg(row);
+}
+
+function addIncludes(session) {
+  const items = INCLUDES[session] || INCLUDES['Maternity'];
+  const row = makeRow('studio');
+  row.appendChild(makeAvatar());
+  const c = document.createElement('div');
+  c.className = 'card card-includes fade-up';
+  let html = '<div class="card-label">What\'s included</div>';
+  items.forEach(item => {
+    html += `<div class="include-row"><div class="include-dot"><div class="include-dot-inner"></div></div><div class="include-text">${item}</div></div>`;
+  });
+  c.innerHTML = html;
+  row.appendChild(c);
+  appendMsg(row);
+}
+
+function addComparison() {
+  const rows = [
+    ['The typical studio','The TWS difference'],
+    ['600+ unedited images dumped on you','A curated gallery of your real favorites'],
+    ['You sort through everything alone','We review it together — you always decide'],
+    ['One-size packages','Investment built around what you love'],
+    ['A transaction','A guided experience, start to finish'],
+    ['You coordinate everything yourself','We handle hair, makeup, wardrobe, all of it'],
+  ];
+  const wrap = document.createElement('div');
+  wrap.className = 'row studio fade-up';
+  wrap.appendChild(makeAvatar());
+  const c = document.createElement('div');
+  c.className = 'card-comparison fade-up';
+  rows.forEach((r, i) => {
+    const grid = document.createElement('div');
+    grid.className = 'comp-grid';
+    if (i < rows.length - 1) grid.classList.add('comp-row-divider');
+    if (i === 0) grid.classList.add('comp-head');
+    else grid.classList.add(i % 2 === 0 ? 'comp-row-even' : 'comp-row-odd');
+    grid.innerHTML = `<div class="comp-cell">${r[0]}</div><div class="comp-cell">${r[1]}</div>`;
+    c.appendChild(grid);
+  });
+  wrap.appendChild(c);
+  appendMsg(wrap);
+}
+
+function addProcess(session) {
+  const steps = PROCESS_STEPS[session] || PROCESS_STEPS['Maternity'];
+  const nums = ['①','②','③','④'];
+  const row = makeRow('studio');
+  row.appendChild(makeAvatar());
+  const c = document.createElement('div');
+  c.className = 'card card-process fade-up';
+  let html = '<div class="card-label">Your Experience</div>';
+  steps.forEach(([title, body], i) => {
+    html += `<div class="process-step"><div class="step-num">${nums[i]}</div><div><div class="step-title">${title}</div><div class="step-body">${body}</div></div></div>`;
+  });
+  c.innerHTML = html;
+  row.appendChild(c);
+  appendMsg(row);
+}
+
+function addQuote(session) {
+  const p = PRICING[session] || PRICING['Maternity'];
+  const row = makeRow('studio');
+  row.appendChild(makeAvatar());
+  const c = document.createElement('div');
+  c.className = 'card card-quote fade-up';
+  c.innerHTML = `
+    <div class="q-label">Starting Investment</div>
+    <div class="q-price">${p.price}</div>
+    <div class="q-pkg">${p.label} · ${session}</div>
+    <div class="q-note">${p.note} Your final investment is chosen by you — after your gallery review, you decide what to keep. No pressure beyond that.</div>`;
+  row.appendChild(c);
+  appendMsg(row);
+}
+
+function addConfirm(status, session) {
+  const copy = {
+    contact_now: {
+      dark: true,
+      tag: "You're on the list",
+      headline: "You're in.",
+      body: "Jasmine will reach out personally within 24 hours to talk through your vision and answer any questions — no forms, no pressure, just a real conversation.",
+      sub: "We typically book 4–6 weeks out. Your place on the list holds your spot at the front of the line.",
+    },
+    contact_later: {
+      dark: false,
+      tag: "We've got you",
+      headline: "You're on the list.",
+      body: ({
+        'Maternity':         "We'll check in around 18–20 weeks — the ideal planning window. Nothing to think about until then.",
+        'Newborn':           "We'll follow up as your due date gets closer. You'll be top of mind when the time comes.",
+        'Seniors':           "We'll be in touch when booking opens for your senior season. You're already on early access.",
+        'Family':            "When you're ready for updated photos, you'll already be at the front of the list.",
+        'Branding':          "When you're ready to refresh your brand visuals, we'll already know exactly what you need.",
+        'Boudoir Maternity': "We'll reach out after your anatomy scan when the timing feels right.",
+      })[session] || "We'll reach out at exactly the right moment.",
+      sub: "When we do reach out, you'll already know the full process and investment — no surprises, no pressure.",
+    },
+  }[status] || {
+    dark: true,
+    tag: "We'll make this work",
+    headline: "Let's talk.",
+    body: "Your timeline is close, but Jasmine personally reviews every inquiry. We occasionally have availability that isn't listed publicly.",
+    sub: "Expect to hear from us within 24 hours.",
+  };
+
+  const row = makeRow('studio');
+  row.appendChild(makeAvatar());
+  const c = document.createElement('div');
+  c.className = `card card-confirm ${copy.dark ? 'dark' : 'light'} fade-up`;
+  c.innerHTML = `
+    <div class="conf-tag"><div class="conf-check">✓</div>${copy.tag}</div>
+    <div class="conf-headline">${copy.headline}</div>
+    <div class="conf-body">${copy.body}</div>
+    ${copy.sub ? `<div class="conf-sub">${copy.sub}</div>` : ''}`;
+  row.appendChild(c);
+  appendMsg(row);
+}
+
+function addNotAFit() {
+  const row = makeRow('studio');
+  row.appendChild(makeAvatar());
+  const c = document.createElement('div');
+  c.className = 'card card-petite fade-up';
+  c.innerHTML = `
+    <div class="card-label">A recommendation from Jasmine</div>
+    <div class="petite-intro">Based on what you're looking for, our Petite Session might be a beautiful fit — a streamlined studio experience designed for portraits without the full production day.</div>
+    <div class="petite-price-row">
+      <div class="petite-price">$490</div>
+      <div class="petite-was">Regular $990</div>
+    </div>
+    <div class="petite-items">
+      <div class="petite-item"><div class="petite-check">✓</div><div class="petite-item-text">Complimentary professional hair &amp; makeup<span>Touch-ups on arrival — you arrive camera-ready and leave stunning</span></div></div>
+      <div class="petite-item"><div class="petite-check">✓</div><div class="petite-item-text">Up to 45-minute studio session<span>Downtown Rochester studio — multiple wardrobe changes welcome</span></div></div>
+      <div class="petite-item"><div class="petite-check">✓</div><div class="petite-item-text">2 high-resolution digital images included<span>Additional images available — buy 2, get 1 free</span></div></div>
+      <div class="petite-item"><div class="petite-check">✓</div><div class="petite-item-text">Portraits for 1 person</div></div>
+    </div>
+    <div class="petite-note">Petite Sessions are held one day per month — spots are limited and go quickly.</div>
+    <a href="https://twowildsoulsphotography.com/specials" target="_blank" class="naf-link">View availability &amp; book your spot →</a>`;
+  row.appendChild(c);
+  appendMsg(row);
+}
+
+function addForm() {
+  const row = makeRow('studio');
+  row.id = 'form-row';
+  row.appendChild(makeAvatar());
+  const c = document.createElement('div');
+  c.className = 'card card-form fade-up';
+  c.style.maxWidth = '88%';
+  c.innerHTML = `
+    <div class="card-label">Claim Your Spot</div>
+    <div class="form-row">
+      <input type="text" id="f-first" placeholder="First name">
+      <input type="text" id="f-last" placeholder="Last name">
+    </div>
+    <input type="email" id="f-email" placeholder="Email address">
+    <input type="tel" id="f-phone" placeholder="Phone number">
+    <div id="f-error" class="form-error" style="display:none">Please fill in all fields with a valid email.</div>
+    <button class="form-btn" id="f-btn">Reserve my spot →</button>
+    <div class="form-note">Jasmine responds personally within 24 hours. No commitment, no pressure.</div>`;
+  row.appendChild(c);
+  appendMsg(row);
+
+  $('f-btn').addEventListener('click', handleFormSubmit);
+}
+
+// ─── QUEUE ENGINE ──────────────────────────────────────────────────
+const SPEEDS = { text: 950, card: 800, short: 700, long: 1200 };
+
+function Q(items) {
+  queue.push(...items);
+  if (!running) runQueue();
+}
+
+async function runQueue() {
+  running = true;
+  while (queue.length > 0) {
+    const item = queue.shift();
+    const spd = getSpeed();
+
+    if (item.type === 'typing') {
+      showTyping();
+      await delay((item.ms || 950) * spd);
+      hideTyping();
+    } else if (item.type === 'text') {
+      addTextBubble(item.html, item.side || 'studio');
+      await delay(100);
+      scrollDown();
+    } else if (item.type === 'testimonial') {
+      addTestimonial(item.session);
+    } else if (item.type === 'includes') {
+      addIncludes(item.session);
+    } else if (item.type === 'comparison') {
+      addComparison();
+    } else if (item.type === 'process') {
+      addProcess(item.session);
+    } else if (item.type === 'quote') {
+      addQuote(item.session);
+    } else if (item.type === 'confirm') {
+      addConfirm(item.status, item.session);
+    } else if (item.type === 'notafit') {
+      addNotAFit();
+    } else if (item.type === 'form') {
+      addForm();
+    } else if (item.type === 'chips') {
+      setChips(item.opts);
+    } else if (item.type === 'fn') {
+      item.fn();
+    }
+  }
+  running = false;
+}
+
+function say(html, ms) {
+  return [{ type: 'typing', ms: ms || SPEEDS.text }, { type: 'text', html, side: 'studio' }];
+}
+function showCard(kind, props, ms) {
+  return [{ type: 'typing', ms: ms || SPEEDS.card }, { type: kind, ...props }];
+}
+
+// ─── CHIPS ─────────────────────────────────────────────────────────
+function setChips(opts) {
+  chips.innerHTML = '';
+  if (!opts || opts.length === 0) { chips.classList.add('hidden'); return; }
+  chips.classList.remove('hidden');
+  opts.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'chip';
+    btn.textContent = opt.label;
+    btn.addEventListener('click', () => handleOpt(opt));
+    chips.appendChild(btn);
+  });
+  scrollDown();
+}
+
+function hideChips() {
+  chips.classList.add('hidden');
+  chips.innerHTML = '';
+}
+
+// ─── FLOW BUILDERS ─────────────────────────────────────────────────
+function goEducation() {
+  Q([
+    ...say("Let me show you how we're different from most studios:", SPEEDS.short),
+    ...showCard('comparison', {}, 500),
+    ...say("Most photographers hand you everything and leave you to figure it out. We hand you only what you'll actually treasure — and we figure out what that is together.", SPEEDS.long),
+    ...showCard('testimonial', { session: state.sessionType }, 600),
+    ...say("Does this kind of guided, all-inclusive experience resonate with you?", SPEEDS.text),
+    { type: 'chips', opts: [
+      { label: "Yes — that's exactly what I want",  action: 'edu_yes' },
+      { label: "Tell me more about the process",    action: 'edu_more' },
+      { label: "I'd like to see what's included",   action: 'edu_includes' },
+      { label: "Explore the full service page",     action: 'edu_service' },
+    ]},
+  ]);
+}
+
+function goProcess() {
+  Q([
+    ...showCard('process', { session: state.sessionType }, SPEEDS.short),
+    ...say("From planning through delivery — every step is guided. You're never left wondering what comes next, what to wear, or what anything costs.", SPEEDS.long),
+    { type: 'fn', fn: goValueQ },
+  ]);
+}
+
+function goValueQ() {
+  Q([
+    ...say("One last thing before your investment details —", SPEEDS.short),
+    ...say("What matters most to you about these photos?", SPEEDS.short),
+    { type: 'chips', opts: [
+      { label: 'Heirloom prints and artwork for our home',  action: 'value_heirloom' },
+      { label: 'The full experience — styling, everything', action: 'value_full' },
+      { label: "I'd prefer to keep things simple",          action: 'value_simple' },
+    ]},
+  ]);
+}
+
+function goCapture() {
+  const p = PRICING[state.sessionType] || PRICING['Maternity'];
+  Q([
+    ...say("Based on everything you've shared, here's your starting investment:", SPEEDS.short),
+    ...showCard('quote', { session: state.sessionType }, 500),
+    ...say("That's a starting point — not a ceiling. Most clients are genuinely pleasantly surprised by the process.", SPEEDS.long),
+    ...say("Ready to get your name on Jasmine's list?", SPEEDS.short),
+    { type: 'form' },
+  ]);
+}
+
+// ─── OPTION HANDLER ────────────────────────────────────────────────
+function handleOpt(opt) {
+  if (opt.init) opt.init();
+  hideChips();
+  addTextBubble(opt.label, 'user');
+
+  const a = opt.action;
+
+  // SESSION
+  if (a === 'session_maternity' || a === 'session_boudoir') {
+    Q([
+      ...say("How exciting! How far along are you?", SPEEDS.short),
+      { type: 'chips', opts: [
+        { label: 'Just found out — under 12 weeks', action: 'mat_u12' },
+        { label: '12 – 17 weeks',                   action: 'mat_u18' },
+        { label: '18 – 24 weeks',                   action: 'mat_ideal' },
+        { label: '25 – 30 weeks',                   action: 'mat_ideal' },
+        { label: '30+ weeks',                       action: 'mat_late' },
+      ]},
+    ]);
+  } else if (a === 'session_newborn') {
+    Q([
+      ...say("Congratulations! Is your little one already here, or are you still expecting?", SPEEDS.short),
+      { type: 'chips', opts: [
+        { label: 'Baby is already here', action: 'nb_born' },
+        { label: 'Still expecting',       action: 'nb_expecting' },
+      ]},
+    ]);
+  } else if (a === 'session_family') {
+    Q([
+      ...say("Love it. When were your last professional family photos taken?", SPEEDS.short),
+      { type: 'chips', opts: [
+        { label: 'Never — or it\'s been forever (3+ years)', action: 'timing_now' },
+        { label: 'About 1 – 3 years ago',                    action: 'timing_now' },
+        { label: 'Within the last year',                     action: 'timing_later_family' },
+      ]},
+    ]);
+  } else if (a === 'session_seniors') {
+    Q([
+      ...say("Such a big milestone — let's make sure she gets everything she deserves. What year does your senior graduate?", SPEEDS.text),
+      { type: 'chips', opts: [
+        { label: 'Class of 2025', action: 'senior_2025' },
+        { label: 'Class of 2026', action: 'senior_2026' },
+        { label: 'Class of 2027', action: 'senior_later' },
+        { label: 'Class of 2028+', action: 'senior_later' },
+      ]},
+    ]);
+  } else if (a === 'session_branding') {
+    Q([
+      ...say("Your brand visuals matter more than most people realize. When did you last update your professional photos?", SPEEDS.text),
+      { type: 'chips', opts: [
+        { label: 'Never — I\'ve been putting this off', action: 'timing_now' },
+        { label: '1 – 2 years ago',                    action: 'timing_now' },
+        { label: '3+ years ago',                       action: 'timing_now' },
+        { label: 'Just updated — planning ahead',      action: 'timing_later_brand' },
+      ]},
+    ]);
+  }
+
+  // MATERNITY TIMING
+  else if (a === 'mat_u12' || a === 'mat_u18') {
+    state.timingStatus = 'contact_later'; state.timingNote = 'Too early for maternity';
+    Q([
+      ...say("Congratulations on the news! 🤍", SPEEDS.short),
+      ...say("The sweet spot for maternity photos is 28–34 weeks — you're beautifully visible, glowing, and still comfortable. That gives us a little time yet.", SPEEDS.long),
+      ...say("We'll note your timeline and be in touch right around 18–20 weeks — the ideal planning window. Nothing to think about until then.", SPEEDS.text),
+      { type: 'fn', fn: goEducation },
+    ]);
+  } else if (a === 'mat_ideal') {
+    state.timingStatus = 'contact_now'; state.timingNote = 'Ideal maternity window';
+    Q([
+      ...say("That's the sweet spot — you're right in the ideal window.", SPEEDS.short),
+      ...say("This season books quickly. Let's make sure we save your date.", SPEEDS.short),
+      { type: 'fn', fn: goEducation },
+    ]);
+  } else if (a === 'mat_late') {
+    state.timingStatus = 'too_late'; state.timingNote = '30+ weeks, tight timeline';
+    Q([
+      ...say("Your timeline is getting close — but let's not rule anything out just yet.", SPEEDS.short),
+      ...say("Jasmine personally reviews late-timeline requests and occasionally has the right availability. Let's see if we're the right fit first.", SPEEDS.text),
+      { type: 'fn', fn: goEducation },
+    ]);
+  }
+
+  // NEWBORN
+  else if (a === 'nb_born') {
+    Q([
+      ...say("Welcome to the world, little one! How old is baby right now?", SPEEDS.short),
+      { type: 'chips', opts: [
+        { label: 'Under 2 weeks',      action: 'nb_ideal' },
+        { label: '2 – 4 weeks',        action: 'nb_ok' },
+        { label: '4 weeks – 2 months', action: 'nb_late' },
+        { label: 'Over 2 months',      action: 'nb_late' },
+      ]},
+    ]);
+  } else if (a === 'nb_ideal' || a === 'nb_ok') {
+    state.timingStatus = 'contact_now'; state.timingNote = 'Newborn in ideal window';
+    Q([
+      ...say("You're right in the perfect window — this is exactly when newborn magic happens.", SPEEDS.text),
+      { type: 'fn', fn: goEducation },
+    ]);
+  } else if (a === 'nb_late') {
+    state.timingStatus = 'too_late'; state.timingNote = 'Newborn past ideal window';
+    Q([
+      ...say("The ideal newborn window is under 4 weeks, but Jasmine does beautiful milestone sessions too. Let's see if we're the right fit.", SPEEDS.text),
+      { type: 'fn', fn: goEducation },
+    ]);
+  } else if (a === 'nb_expecting') {
+    state.timingStatus = 'contact_now'; state.timingNote = 'Expecting — planning newborn';
+    Q([
+      ...say("Perfect timing to plan ahead — the newborn window goes fast. How far out are you?", SPEEDS.short),
+      { type: 'chips', opts: [
+        { label: 'Due within 4 weeks', action: 'timing_now' },
+        { label: '4 – 8 weeks out',    action: 'timing_now' },
+        { label: '8+ weeks out',       action: 'timing_now' },
+      ]},
+    ]);
+  }
+
+  // SENIORS
+  else if (a === 'senior_2025') {
+    state.timingStatus = 'too_late'; state.timingNote = 'Class of 2025 — limited dates';
+    Q([
+      ...say("Priority dates for the Class of '25 are very limited at this point — but Jasmine personally checks every inquiry for last-minute availability.", SPEEDS.text),
+      { type: 'fn', fn: goEducation },
+    ]);
+  } else if (a === 'senior_2026') {
+    state.timingStatus = 'contact_now'; state.timingNote = 'Class of 2026 — ideal window';
+    Q([
+      ...say("Class of 2026 — you're in the perfect planning window. January through May is when we book our senior season, and the best dates go first.", SPEEDS.text),
+      { type: 'fn', fn: goEducation },
+    ]);
+  } else if (a === 'senior_later') {
+    state.timingStatus = 'contact_later'; state.timingNote = 'Senior — early planning';
+    Q([
+      ...say("You're ahead of the game — which is exactly where you want to be. We'll add you to early access for your senior year.", SPEEDS.text),
+      { type: 'fn', fn: goEducation },
+    ]);
+  }
+
+  // GENERIC TIMING
+  else if (a === 'timing_now') {
+    state.timingStatus = 'contact_now';
+    Q([
+      ...say("Great — you're in the right window. Let me show you what we do differently.", SPEEDS.short),
+      { type: 'fn', fn: goEducation },
+    ]);
+  } else if (a === 'timing_later_family') {
+    state.timingStatus = 'contact_later'; state.timingNote = 'Recent family session';
+    Q([
+      ...say("Sounds like your photos are still fresh — we'll keep you in the loop for when you're ready for updated ones.", SPEEDS.text),
+      { type: 'fn', fn: goEducation },
+    ]);
+  } else if (a === 'timing_later_brand') {
+    state.timingStatus = 'contact_later'; state.timingNote = 'Recently updated branding';
+    Q([
+      ...say("Noted — we'll stay in touch and reach out when the timing feels right.", SPEEDS.short),
+      { type: 'fn', fn: goEducation },
+    ]);
+  }
+
+  // EDUCATION
+  else if (a === 'edu_yes') {
+    Q([{ type: 'fn', fn: goValueQ }]);
+  } else if (a === 'edu_more') {
+    Q([{ type: 'fn', fn: goProcess }]);
+  } else if (a === 'edu_service') {
+    const url = SERVICE_PAGES[state.sessionType] || SERVICE_PAGES['Maternity'];
+    window.open(url, '_blank');
+    Q([
+      ...say("Opening that in a new tab for you — come back whenever you're ready and we'll pick right up.", SPEEDS.text),
+      { type: 'fn', fn: goValueQ },
+    ]);
+  } else if (a === 'edu_includes') {
+    Q([
+      ...showCard('includes', { session: state.sessionType }, 500),
+      ...say("Every single thing is coordinated for you. You just show up.", SPEEDS.short),
+      { type: 'fn', fn: goValueQ },
+    ]);
+  }
+
+  // VALUE QUALIFIER
+  else if (a === 'value_simple') {
+    state.valueType = 'not_a_fit';
+    Q([
+      ...say("Got it — I actually have something that might be perfect for you.", SPEEDS.short),
+      ...showCard('notafit', {}, 500),
+    ]);
+    isDone = true;
+  } else if (a === 'value_heirloom' || a === 'value_keepsake' || a === 'value_digital' || a === 'value_full') {
+    state.valueType = a;
+    Q([
+      ...say("That's exactly the kind of session Jasmine loves creating.", SPEEDS.short),
+      { type: 'fn', fn: goCapture },
+    ]);
+  }
+}
+
+// ─── FORM SUBMIT ───────────────────────────────────────────────────
+async function handleFormSubmit() {
+  const firstName = $('f-first').value.trim();
+  const lastName  = $('f-last').value.trim();
+  const email     = $('f-email').value.trim();
+  const phone     = $('f-phone').value.trim();
+  const err = $('f-error');
+
+  [$('f-first'),$('f-last'),$('f-email'),$('f-phone')].forEach(el => el.classList.remove('error'));
+  err.style.display = 'none';
+
+  let hasErr = false;
+  if (!firstName) { $('f-first').classList.add('error'); hasErr = true; }
+  if (!lastName)  { $('f-last').classList.add('error');  hasErr = true; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { $('f-email').classList.add('error'); hasErr = true; }
+  if (!phone)     { $('f-phone').classList.add('error'); hasErr = true; }
+  if (hasErr) { err.style.display = 'block'; return; }
+
+  const btn = $('f-btn');
+  btn.disabled = true;
+  btn.textContent = 'Reserving your spot…';
+
+  try {
+    const timing = state.timingStatus || 'contact_now';
+    const payload = {
+      data: {
+        type: 'subscription',
+        attributes: {
+          custom_source: 'Studio Guide Chat',
+          profile: {
+            data: {
+              type: 'profile',
+              attributes: {
+                email, phone_number: phone, first_name: firstName, last_name: lastName,
+                properties: {
+                  vip_session_type:   state.sessionType   || '',
+                  vip_qualification:  timing,
+                  vip_contact_now:    timing === 'contact_now' ? 'yes' : 'no',
+                  vip_timing_note:    state.timingNote    || '',
+                  vip_value_type:     state.valueType     || '',
+                  vip_weeks_pregnant: state.weeksPreg     || '',
+                  vip_newborn_status: state.newbornStatus || '',
+                  vip_grad_year:      state.gradYear      || '',
+                  vip_source:         'Studio Guide Chat',
+                }
+              }
+            }
+          }
+        },
+        relationships: { list: { data: { type: 'list', id: KLAVIYO_LIST_ID } } }
+      }
+    };
+    await fetch(`https://a.klaviyo.com/client/subscriptions/?company_id=${KLAVIYO_PUBLIC_KEY}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'revision': '2023-02-22' },
+      body: JSON.stringify(payload)
+    });
+  } catch(e) { console.warn('Klaviyo:', e); }
+
+  const formRow = $('form-row');
+  if (formRow) formRow.remove();
+
+  addTextBubble(`${firstName} ${lastName} · ${email}`, 'user');
+  isDone = true;
+  Q([
+    ...showCard('confirm', { status: state.timingStatus || 'contact_now', session: state.sessionType }, 700),
+    ...say("Everything's been passed along to Jasmine — she'll have full context when she reaches out. No need to start from scratch. 🤍", SPEEDS.long),
+  ]);
+}
+
+// ─── INIT ──────────────────────────────────────────────────────────
+Q([
+  ...say("Hi — I'm the Two Wild Souls studio guide.", SPEEDS.text),
+  ...say("I'll help you figure out which session is right for you, show you exactly what's included, and give you a real starting investment. Takes about 3 minutes.", SPEEDS.long),
+  ...say("What kind of session are you exploring?", SPEEDS.short),
+  { type: 'chips', opts: [
+    { label: 'Maternity',         action: 'session_maternity', init: () => { state.sessionType = 'Maternity'; } },
+    { label: 'Newborn',           action: 'session_newborn',   init: () => { state.sessionType = 'Newborn'; } },
+    { label: 'Family',            action: 'session_family',    init: () => { state.sessionType = 'Family'; } },
+    { label: 'Seniors',           action: 'session_seniors',   init: () => { state.sessionType = 'Seniors'; } },
+    { label: 'Branding',          action: 'session_branding',  init: () => { state.sessionType = 'Branding'; } },
+    { label: 'Boudoir Maternity', action: 'session_boudoir',   init: () => { state.sessionType = 'Boudoir Maternity'; } },
+  ]},
+]);
+
+// Speed hook for tweaks
+window.__twsSpeed = 'real';
+
+// ─── IFRAME CONTEXT ────────────────────────────────────────────────
+// Detect if running inside the launcher iframe
+(function() {
+  try {
+    if (window.self !== window.top) {
+      document.body.classList.add('in-iframe');
+    }
+  } catch(e) {
+    document.body.classList.add('in-iframe'); // cross-origin = definitely in iframe
+  }
+
+  // iOS visual viewport keyboard handling
+  var isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
+  if (isIOS && window.visualViewport) {
+    function updateVVH() {
+      document.documentElement.style.setProperty('--vvh', window.visualViewport.height + 'px');
+      // If keyboard is up (viewport shrunk significantly), add class
+      var ratio = window.visualViewport.height / window.screen.height;
+      document.body.classList.toggle('ios-kb', ratio < 0.75);
+      scrollDown();
+    }
+    window.visualViewport.addEventListener('resize', updateVVH);
+    window.visualViewport.addEventListener('scroll', updateVVH);
+  }
+
+  // Listen for parent panel open signal — scroll to bottom on reveal
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'tws_panel_open') {
+      scrollDown();
+    }
+  });
+})();
+</script>
+</body>
+</html>
