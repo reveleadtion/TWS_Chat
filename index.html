@@ -60,7 +60,8 @@ body.ios-kb #app{height:var(--vvh,100dvh)}
 .row.user{flex-direction:row-reverse}
 
 /* AVATAR */
-.avatar{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--forest) 0%,#5a6450 100%);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:11px;color:var(--gold);align-self:flex-end;margin-bottom:2px;box-shadow:0 1px 6px rgba(63,68,56,.22)}
+.avatar{width:32px;height:32px;border-radius:50%;flex-shrink:0;overflow:hidden;align-self:flex-end;margin-bottom:2px;box-shadow:0 1px 6px rgba(63,68,56,.28);border:1.5px solid var(--gold)}
+.avatar img{width:100%;height:100%;object-fit:cover;object-position:center top;display:block}
 
 /* TEXT BUBBLES */
 .bubble-text{max-width:80%;padding:10px 14px;border-radius:3px 14px 14px 14px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:300;line-height:1.68;letter-spacing:.01em}
@@ -173,14 +174,19 @@ input.error{border-color:var(--urgent)}
 <body>
 <div id="app">
   <div id="header">
-    <div>
-      <div class="h-title">Two Wild <em>Souls</em> Photography</div>
-      <div class="h-sub">Rochester · Metro Detroit</div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <div style="width:38px;height:38px;border-radius:50%;overflow:hidden;flex-shrink:0;border:1.5px solid var(--gold);box-shadow:0 1px 6px rgba(63,68,56,.2)">
+        <img src="https://static.showit.co/file/N0mLcuchHvT5zhas9MUvfg/331377/2025_headshot_7542-min.jpg" alt="Jasmine" style="width:100%;height:100%;object-fit:cover;object-position:center top;display:block">
+      </div>
+      <div>
+        <div class="h-title">Jasmine <em>Robertson</em></div>
+        <div class="h-sub">Two Wild Souls Photography · Rochester, MI</div>
+      </div>
     </div>
     <div class="h-right">
       <div class="h-status">
         <div class="h-dot"></div>
-        <div class="h-label">Studio Guide</div>
+        <div class="h-label">Online</div>
       </div>
       <div class="h-reply">Replies instantly</div>
     </div>
@@ -261,12 +267,12 @@ const INCLUDES = {
 };
 
 const PROCESS_STEPS = {
-  'Maternity':         [['Planning call','We talk through your vision, timing, and location. Nothing is left to chance.'],['Your session day','Studio, in-home, or outdoor — your call. Hair & makeup and gown styling ready for you.'],['Gallery review together','We narrow your gallery to your true favorites. You always decide.'],['Delivery & display','Prints, albums, wall art. We help you actually display your story.']],
-  'Newborn':           [['Pre-birth consultation','We connect before baby arrives to plan your session and lock in your date.'],['Session within 5–14 days','The ideal newborn window — curly, sleepy, perfectly fresh.'],['Gallery review together','We identify your favorites together and build your collection around them.'],['Your keepsakes delivered','Prints, albums, and wall art crafted to last a lifetime.']],
-  'Family':            [['Discovery call','We talk through your family dynamic, location preferences, and what you want to capture.'],['Your session day','Studio or the location that means something to your family.'],['Gallery review together','You tell us your favorites — we build your collection from there.'],['Prints for your walls','Real printed photos that actually end up where they belong.']],
-  'Seniors':           [['Style & planning session','We plan your looks, locations, and the story we want to tell together.'],['Your session day','Studio and/or outdoor locations — usually 2–3 looks.'],['Gallery review','You pick your favorites. We build your senior collection around them.'],['Announcement-ready','Cards, prints, and digital files ready for everything ahead.']],
-  'Branding':          [['Brand discovery call','We talk through your brand personality, use cases, and what images you actually need.'],['Your brand session','Studio, on-location, or both. Multiple looks and settings.'],['Curated delivery','A refined set of on-brand images — not 600 to sort through yourself.'],['Usage guidance','We help you figure out which images go where.']],
-  'Boudoir Maternity': [['Private consultation','We talk through your comfort level, styling vision, and what this session means to you.'],['Your session day','In-studio. Gown styling and hair & makeup ready for you.'],['Gallery review together','You tell us your favorites. No pressure, no surprises.'],['Your keepsakes','Printed albums, wall art, and digitals — designed to last.']],
+  'Maternity':         [['Planning call','We talk through your vision, timing, and location. I make sure nothing is left to chance.'],['Your session day','Studio, in-home, or outdoor — your call. Hair & makeup and gown styling are all ready for you.'],['Gallery review together','I narrow your gallery down to your true favorites. You always decide what stays.'],['Delivery & display','Prints, albums, wall art. I help you actually display your story — not just store it.']],
+  'Newborn':           [['Pre-birth consultation','We connect before baby arrives to plan your session and lock in your date.'],['Session within 5–14 days','The ideal newborn window — curly, sleepy, perfectly fresh.'],['Gallery review together','I identify your favorites with you and build your collection around them.'],['Your keepsakes delivered','Prints, albums, and wall art crafted to last a lifetime.']],
+  'Family':            [['Discovery call','I learn about your family dynamic, preferred locations, and what moments matter most to you.'],['Your session day','Studio or the location that means something to your family.'],['Gallery review together','You tell me your favorites — I build your collection from there.'],['Prints for your walls','Real printed photos that actually end up where they belong.']],
+  'Seniors':           [['Style & planning session','I plan your looks, locations, and the story we want to tell together.'],['Your session day','Studio and/or outdoor locations — usually 2–3 looks.'],['Gallery review','You pick your favorites. I build your senior collection around them.'],['Announcement-ready','Cards, prints, and digital files ready for everything ahead.']],
+  'Branding':          [['Brand discovery call','I learn your brand personality, use cases, and exactly what images you need.'],['Your brand session','Studio, on-location, or both. Multiple looks and settings.'],['Curated delivery','A refined set of on-brand images — not 600 photos to sort through yourself.'],['Usage guidance','I help you figure out which images go where, so nothing sits unused.']],
+  'Boudoir Maternity': [['Private consultation','We talk through your comfort level, styling vision, and what this session means to you.'],['Your session day','In-studio. Gown styling and hair & makeup ready for you.'],['Gallery review together','You tell me your favorites. No pressure, no surprises.'],['Your keepsakes','Printed albums, wall art, and digitals — designed to last.']],
 };
 
 const SERVICE_PAGES = {
@@ -295,10 +301,16 @@ function getSpeed() { return window.__twsSpeed === 'fast' ? 0.2 : 1; }
 
 // ─── BUILD ELEMENTS ────────────────────────────────────────────────
 
+const JASMINE_PHOTO = 'https://static.showit.co/file/N0mLcuchHvT5zhas9MUvfg/331377/2025_headshot_7542-min.jpg';
+
 function makeAvatar() {
   const d = document.createElement('div');
   d.className = 'avatar';
-  d.textContent = 'J';
+  const img = document.createElement('img');
+  img.src = JASMINE_PHOTO;
+  img.alt = 'Jasmine';
+  img.loading = 'lazy';
+  d.appendChild(img);
   return d;
 }
 
@@ -371,12 +383,12 @@ function addIncludes(session) {
 
 function addComparison() {
   const rows = [
-    ['The typical studio','The TWS difference'],
+    ['The typical studio','What I do differently'],
     ['600+ unedited images dumped on you','A curated gallery of your real favorites'],
     ['You sort through everything alone','We review it together — you always decide'],
     ['One-size packages','Investment built around what you love'],
     ['A transaction','A guided experience, start to finish'],
-    ['You coordinate everything yourself','We handle hair, makeup, wardrobe, all of it'],
+    ['You coordinate everything yourself','I handle hair, makeup, wardrobe, all of it'],
   ];
   const wrap = document.createElement('div');
   wrap.className = 'row studio fade-up';
@@ -431,31 +443,31 @@ function addConfirm(status, session) {
   const copy = {
     contact_now: {
       dark: true,
-      tag: "You're on the list",
-      headline: "You're in.",
-      body: "Jasmine will reach out personally within 24 hours to talk through your vision and answer any questions — no forms, no pressure, just a real conversation.",
-      sub: "We typically book 4–6 weeks out. Your place on the list holds your spot at the front of the line.",
+      tag: "You're on my list",
+      headline: "You're in. 🤍",
+      body: "I'll reach out personally within 24 hours to talk through your vision and answer any questions — no forms, no pressure, just a real conversation.",
+      sub: "I typically book 4–6 weeks out. Your spot on my list holds your place at the front of the line.",
     },
     contact_later: {
       dark: false,
-      tag: "We've got you",
-      headline: "You're on the list.",
+      tag: "I've got you",
+      headline: "You're on my list.",
       body: ({
-        'Maternity':         "We'll check in around 18–20 weeks — the ideal planning window. Nothing to think about until then.",
-        'Newborn':           "We'll follow up as your due date gets closer. You'll be top of mind when the time comes.",
-        'Seniors':           "We'll be in touch when booking opens for your senior season. You're already on early access.",
-        'Family':            "When you're ready for updated photos, you'll already be at the front of the list.",
-        'Branding':          "When you're ready to refresh your brand visuals, we'll already know exactly what you need.",
-        'Boudoir Maternity': "We'll reach out after your anatomy scan when the timing feels right.",
-      })[session] || "We'll reach out at exactly the right moment.",
-      sub: "When we do reach out, you'll already know the full process and investment — no surprises, no pressure.",
+        'Maternity':         "I'll check in around 18–20 weeks — the ideal planning window. Nothing to think about until then.",
+        'Newborn':           "I'll follow up as your due date gets closer. You'll be top of mind when the time comes.",
+        'Seniors':           "I'll be in touch when booking opens for your senior season. You're already on early access.",
+        'Family':            "When you're ready for updated family photos, you'll already be at the front of my list.",
+        'Branding':          "When you're ready to refresh your brand visuals, I'll already know exactly what you need.",
+        'Boudoir Maternity': "I'll reach out after your anatomy scan when the timing feels right.",
+      })[session] || "I'll reach out at exactly the right moment.",
+      sub: "When I do reach out, you'll already know my full process and investment — no surprises, no pressure.",
     },
   }[status] || {
     dark: true,
-    tag: "We'll make this work",
+    tag: "Let's make this work",
     headline: "Let's talk.",
-    body: "Your timeline is close, but Jasmine personally reviews every inquiry. We occasionally have availability that isn't listed publicly.",
-    sub: "Expect to hear from us within 24 hours.",
+    body: "Your timeline is close, but I personally review every inquiry and occasionally have availability that isn't listed publicly.",
+    sub: "Expect to hear from me within 24 hours.",
   };
 
   const row = makeRow('studio');
@@ -480,14 +492,14 @@ function addNotAFit(isNewborn) {
     ? 'Up to 90-minute studio session<span>More time to work with baby at their own pace — no rushing</span>'
     : 'Up to 45-minute studio session<span>Downtown Rochester studio — multiple wardrobe changes welcome</span>';
   const hmua = isNewborn
-    ? 'No hair &amp; makeup — more session time instead<span>Additional time lets us follow baby\'s lead without any rush</span>'
+    ? 'No hair &amp; makeup — more session time instead<span>Extra time means I can follow baby\'s lead without any rush</span>'
     : 'Complimentary professional hair &amp; makeup<span>Touch-ups on arrival — you arrive camera-ready and leave stunning</span>';
   const scarcityText = isNewborn
-    ? 'Newborn Petite Sessions are scheduled around existing bookings — reach out to check availability.'
-    : 'Petite Sessions are held one day per month — spots are limited and go quickly.';
+    ? 'Newborn Petite Sessions are scheduled around my existing bookings — reach out and I\'ll check availability for you.'
+    : 'I hold Petite Sessions one day per month — spots are limited and go quickly.';
   c.innerHTML = `
-    <div class="card-label">A recommendation from Jasmine</div>
-    <div class="petite-intro">Based on what you're looking for, our Petite Session might be a beautiful fit — a streamlined studio experience designed for portraits without the full production day.</div>
+    <div class="card-label">My recommendation for you</div>
+    <div class="petite-intro">Based on what you're looking for, my Petite Session might be a beautiful fit — a streamlined studio experience designed for portraits without the full production day.</div>
     <div class="petite-price-row">
       <div class="petite-price">$490</div>
       <div class="petite-was">Regular $990</div>
@@ -511,13 +523,13 @@ function addExtendedFamily() {
   c.className = 'card card-petite fade-up';
   c.innerHTML = `
     <div class="card-label">Extended Family Sessions</div>
-    <div class="petite-intro">Extended family sessions are some of the most meaningful work we do — multiple generations, one beautiful story. Here's how the investment works.</div>
+    <div class="petite-intro">Extended family sessions are some of the most meaningful work I do — multiple generations, one beautiful story. Here's how the investment works.</div>
     <div class="petite-items">
       <div class="petite-item"><div class="petite-check">✓</div><div class="petite-item-text">Weekday sessions — starting at $1,990<span>Most families find weekdays the easiest to coordinate</span></div></div>
       <div class="petite-item"><div class="petite-check">✓</div><div class="petite-item-text">Weekend sessions — starting at $2,290<span>Premium availability for families who need the flexibility</span></div></div>
     </div>
     <div class="petite-note">Most extended families split the investment between households — three families sharing a weekday session works out to around $665 each. Everyone walks away with the full gallery. It's one of the smartest ways to make it work.</div>
-    <a href="https://twowildsoulsphotography.com/metro-detroit-family-photography" target="_blank" class="naf-link">Learn more &amp; get on Jasmine's list →</a>`;
+    <a href="https://twowildsoulsphotography.com/metro-detroit-family-photography" target="_blank" class="naf-link">Learn more &amp; get on my list →</a>`;
   row.appendChild(c);
   appendMsg(row);
 }
@@ -530,7 +542,7 @@ function addForm() {
   c.className = 'card card-form fade-up';
   c.style.maxWidth = '88%';
   c.innerHTML = `
-    <div class="card-label">Claim Your Spot</div>
+    <div class="card-label">Get on My List</div>
     <div class="form-row">
       <input type="text" id="f-first" placeholder="First name">
       <input type="text" id="f-last" placeholder="Last name">
@@ -539,7 +551,7 @@ function addForm() {
     <input type="tel" id="f-phone" placeholder="Phone number">
     <div id="f-error" class="form-error" style="display:none">Please fill in all fields with a valid email.</div>
     <button class="form-btn" id="f-btn">Reserve my spot →</button>
-    <div class="form-note">Jasmine responds personally within 24 hours. No commitment, no pressure.</div>`;
+    <div class="form-note">I'll reach out personally within 24 hours. No commitment, no pressure.</div>`;
   row.appendChild(c);
   appendMsg(row);
 
@@ -625,9 +637,9 @@ function hideChips() {
 // ─── FLOW BUILDERS ─────────────────────────────────────────────────
 function goEducation() {
   Q([
-    ...say("Let me show you how we're different from most studios:", SPEEDS.short),
+    ...say("Let me show you how I work differently from most studios:", SPEEDS.short),
     ...showCard('comparison', {}, 500),
-    ...say("Most photographers hand you everything and leave you to figure it out. We hand you only what you'll actually treasure — and we figure out what that is together.", SPEEDS.long),
+    ...say("Most photographers hand you everything and leave you to figure it out. I hand you only what you'll actually treasure — and we figure that out together.", SPEEDS.long),
     ...showCard('testimonial', { session: state.sessionType }, 600),
     ...say("Does this kind of guided, all-inclusive experience resonate with you?", SPEEDS.text),
     { type: 'chips', opts: [
@@ -642,7 +654,7 @@ function goEducation() {
 function goProcess() {
   Q([
     ...showCard('process', { session: state.sessionType }, SPEEDS.short),
-    ...say("From planning through delivery — every step is guided. You're never left wondering what comes next, what to wear, or what anything costs.", SPEEDS.long),
+    ...say("From our first conversation through final delivery — I guide every step. You're never left wondering what comes next, what to wear, or what anything costs.", SPEEDS.long),
     { type: 'fn', fn: goValueQ },
   ]);
 }
@@ -662,12 +674,11 @@ function goValueQ() {
 }
 
 function goCapture() {
-  const p = PRICING[state.sessionType] || PRICING['Maternity'];
   Q([
     ...say("Based on everything you've shared, here's your starting investment:", SPEEDS.short),
     ...showCard('quote', { session: state.sessionType }, 500),
-    ...say("That's a starting point — not a ceiling. Most clients are genuinely pleasantly surprised by the process.", SPEEDS.long),
-    ...say("Ready to get your name on Jasmine's list?", SPEEDS.short),
+    ...say("That's a starting point — not a ceiling. I always make sure you only invest in what you truly love.", SPEEDS.long),
+    ...say("Ready to get your name on my list?", SPEEDS.short),
     { type: 'form' },
   ]);
 }
@@ -736,22 +747,22 @@ function handleOpt(opt) {
     state.timingStatus = 'contact_later'; state.timingNote = 'Too early for maternity';
     Q([
       ...say("Congratulations on the news! 🤍", SPEEDS.short),
-      ...say("The sweet spot for maternity photos is 28–34 weeks — you're beautifully visible, glowing, and still comfortable. That gives us a little time yet.", SPEEDS.long),
-      ...say("We'll note your timeline and be in touch right around 18–20 weeks — the ideal planning window. Nothing to think about until then.", SPEEDS.text),
+      ...say("The sweet spot for maternity photos is 28–34 weeks — you're beautifully visible, glowing, and still comfortable. We have a little time yet.", SPEEDS.long),
+      ...say("I'll note your timeline and reach out right around 18–20 weeks — the ideal planning window. Nothing to think about until then.", SPEEDS.text),
       { type: 'fn', fn: goEducation },
     ]);
   } else if (a === 'mat_ideal') {
     state.timingStatus = 'contact_now'; state.timingNote = 'Ideal maternity window';
     Q([
       ...say("That's the sweet spot — you're right in the ideal window.", SPEEDS.short),
-      ...say("This season books quickly. Let's make sure we save your date.", SPEEDS.short),
+      ...say("My calendar fills quickly this season. Let's make sure I save your date.", SPEEDS.short),
       { type: 'fn', fn: goEducation },
     ]);
   } else if (a === 'mat_late') {
     state.timingStatus = 'too_late'; state.timingNote = '30+ weeks, tight timeline';
     Q([
       ...say("Your timeline is getting close — but let's not rule anything out just yet.", SPEEDS.short),
-      ...say("Jasmine personally reviews late-timeline requests and occasionally has the right availability. Let's see if we're the right fit first.", SPEEDS.text),
+      ...say("I personally review late-timeline requests and occasionally have the right availability. Let's see if we're a fit first.", SPEEDS.text),
       { type: 'fn', fn: goEducation },
     ]);
   }
@@ -769,16 +780,16 @@ function handleOpt(opt) {
   } else if (a === 'nb_urgent') {
     state.timingStatus = 'contact_now'; state.timingNote = 'Newborn under 1 week — book immediately';
     Q([
-      ...say("You need to book right now — this is not an exaggeration. 🤍", SPEEDS.short),
-      ...say("Posed newborn portraits are only possible between 5–14 days old. We need at least a week to coordinate everything, which means today is the day to reach out.", SPEEDS.text),
-      ...say("Jasmine personally reviews every newborn inquiry. Let's get you on her list immediately.", SPEEDS.short),
+      ...say("You need to reach out to me right now — this is not an exaggeration. 🤍", SPEEDS.short),
+      ...say("Posed newborn portraits are only possible between 5–14 days old. I need at least a week to coordinate everything, which means today is the day.", SPEEDS.text),
+      ...say("I personally review every newborn inquiry. Let's get you on my list immediately.", SPEEDS.short),
       { type: 'fn', fn: goEducation },
     ]);
   } else if (a === 'nb_toolate') {
     state.timingStatus = 'too_late'; state.timingNote = 'Newborn 1 week+ — posed window closed';
     Q([
-      ...say("The window for posed newborn portraits has passed — those require baby to be 5–14 days old, and we need at least a week to prepare.", SPEEDS.long),
-      ...say("The good news: Jasmine does beautiful lifestyle family sessions that capture this exact season. Baby, your family, your home — real and natural.", SPEEDS.long),
+      ...say("The window for posed newborn portraits has passed — I need baby to be 5–14 days old, and at least a week to prepare.", SPEEDS.long),
+      ...say("The good news: I do beautiful lifestyle family sessions that capture this exact season. Baby, your family, your home — real and natural.", SPEEDS.long),
       ...say("It's a completely different experience and just as meaningful. Want to explore that instead?", SPEEDS.short),
       { type: 'chips', opts: [
         { label: 'Yes — tell me about lifestyle sessions', action: 'nb_lifestyle_yes' },
@@ -789,26 +800,26 @@ function handleOpt(opt) {
     state.timingStatus = 'contact_now'; state.timingNote = 'Premie — timeline varies';
     Q([
       ...say("Congratulations on your little one — premies have their own timeline and that's completely okay. 🤍", SPEEDS.text),
-      ...say("The ideal window for posed portraits is based on baby's adjusted age, size, and weight rather than birth date. Jasmine reviews every premie inquiry personally to make sure the timing is right.", SPEEDS.text),
-      ...say("Let's get your information to her so she can reach out directly.", SPEEDS.short),
+      ...say("I base the ideal window on baby's adjusted age, size, and weight rather than birth date. I personally review every premie inquiry to make sure the timing is right.", SPEEDS.text),
+      ...say("Let's get your information so I can reach out directly.", SPEEDS.short),
       { type: 'fn', fn: goEducation },
     ]);
   } else if (a === 'nb_lifestyle_yes') {
     state.sessionType = 'Family'; state.timingStatus = 'contact_now'; state.timingNote = 'Redirected from newborn — lifestyle family';
     Q([
-      ...say("Let's make sure Jasmine has everything she needs to reach out.", SPEEDS.short),
+      ...say("I'd love that. Let me grab your info so I can reach out.", SPEEDS.short),
       { type: 'fn', fn: goEducation },
     ]);
   } else if (a === 'nb_lifestyle_no') {
     Q([
-      ...say("Completely understood. If anything changes or you have a future session in mind, we'd love to have you back. 🤍", SPEEDS.text),
+      ...say("Completely understood. If anything changes or you have a future session in mind, I'd love to connect. 🤍", SPEEDS.text),
     ]);
     isDone = true;
   } else if (a === 'nb_expecting') {
     state.timingStatus = 'contact_now'; state.timingNote = 'Expecting — planning newborn';
     Q([
-      ...say("Perfect timing — planning ahead is exactly right for newborns. The posed portrait window is 5–14 days from birth, and we need at least a week to coordinate everything.", SPEEDS.long),
-      ...say("If baby arrives early as a premie, their timeline will be based on adjusted age, size, and weight — Jasmine reviews every premie case personally.", SPEEDS.long),
+      ...say("Perfect timing — planning ahead is exactly right for newborns. The posed portrait window is 5–14 days from birth, and I need at least a week to coordinate everything.", SPEEDS.long),
+      ...say("If baby arrives early as a premie, I'll base the timeline on adjusted age, size, and weight — I review every premie case personally.", SPEEDS.long),
       ...say("How far out are you?", SPEEDS.short),
       { type: 'chips', opts: [
         { label: 'Due within 4 weeks', action: 'timing_now' },
@@ -822,19 +833,19 @@ function handleOpt(opt) {
   else if (a === 'senior_2025') {
     state.timingStatus = 'too_late'; state.timingNote = 'Class of 2025 — limited dates';
     Q([
-      ...say("Priority dates for the Class of '25 are very limited at this point — but Jasmine personally checks every inquiry for last-minute availability.", SPEEDS.text),
+      ...say("Priority dates for the Class of '25 are very limited at this point — but I personally check every inquiry for last-minute availability.", SPEEDS.text),
       { type: 'fn', fn: goEducation },
     ]);
   } else if (a === 'senior_2026') {
     state.timingStatus = 'contact_now'; state.timingNote = 'Class of 2026 — ideal window';
     Q([
-      ...say("Class of 2026 — you're in the perfect planning window. January through May is when we book our senior season, and the best dates go first.", SPEEDS.text),
+      ...say("Class of 2026 — you're in the perfect planning window. January through May is when I book my senior season, and the best dates go first.", SPEEDS.text),
       { type: 'fn', fn: goEducation },
     ]);
   } else if (a === 'senior_later') {
     state.timingStatus = 'contact_later'; state.timingNote = 'Senior — early planning';
     Q([
-      ...say("You're ahead of the game — which is exactly where you want to be. We'll add you to early access for your senior year.", SPEEDS.text),
+      ...say("You're ahead of the game — which is exactly where you want to be. I'll add you to early access for your senior year.", SPEEDS.text),
       { type: 'fn', fn: goEducation },
     ]);
   }
@@ -843,19 +854,19 @@ function handleOpt(opt) {
   else if (a === 'timing_now') {
     state.timingStatus = 'contact_now';
     Q([
-      ...say("Great — you're in the right window. Let me show you what we do differently.", SPEEDS.short),
+      ...say("Great — you're in the right window. Let me show you how I work.", SPEEDS.short),
       { type: 'fn', fn: goEducation },
     ]);
   } else if (a === 'timing_later_family') {
     state.timingStatus = 'contact_later'; state.timingNote = 'Recent family session';
     Q([
-      ...say("Sounds like your photos are still fresh — we'll keep you in the loop for when you're ready for updated ones.", SPEEDS.text),
+      ...say("Sounds like your photos are still fresh — I'll keep you in the loop for when you're ready for updated ones.", SPEEDS.text),
       { type: 'fn', fn: goEducation },
     ]);
   } else if (a === 'timing_later_brand') {
     state.timingStatus = 'contact_later'; state.timingNote = 'Recently updated branding';
     Q([
-      ...say("Noted — we'll stay in touch and reach out when the timing feels right.", SPEEDS.short),
+      ...say("Noted — I'll stay in touch and reach out when the timing feels right.", SPEEDS.short),
       { type: 'fn', fn: goEducation },
     ]);
   }
@@ -869,13 +880,13 @@ function handleOpt(opt) {
     const url = SERVICE_PAGES[state.sessionType] || SERVICE_PAGES['Maternity'];
     window.open(url, '_blank');
     Q([
-      ...say("Opening that in a new tab for you — come back whenever you're ready and we'll pick right up.", SPEEDS.text),
+      ...say("Opening that in a new tab for you — come back whenever you're ready and I'll pick right up.", SPEEDS.text),
       { type: 'fn', fn: goValueQ },
     ]);
   } else if (a === 'edu_includes') {
     Q([
       ...showCard('includes', { session: state.sessionType }, 500),
-      ...say("Every single thing is coordinated for you. You just show up.", SPEEDS.short),
+      ...say("I coordinate every single thing for you. You just show up.", SPEEDS.short),
       { type: 'fn', fn: goValueQ },
     ]);
   }
@@ -900,12 +911,12 @@ function handleOpt(opt) {
   // FAMILY SIZE BRANCH
   else if (a === 'family_immediate') {
     Q([
-      ...say("That's exactly the kind of session Jasmine loves creating.", SPEEDS.short),
+      ...say("That's exactly the kind of session I love creating.", SPEEDS.short),
       { type: 'fn', fn: goCapture },
     ]);
   } else if (a === 'family_extended') {
     Q([
-      ...say("Extended family sessions are some of the most treasured we create.", SPEEDS.short),
+      ...say("Extended family sessions are some of the most treasured work I do.", SPEEDS.short),
       ...showCard('extended_family', {}, 500),
     ]);
     isDone = true;
@@ -995,15 +1006,15 @@ async function handleFormSubmit() {
   isDone = true;
   Q([
     ...showCard('confirm', { status: state.timingStatus || 'contact_now', session: state.sessionType }, 700),
-    ...say("Everything's been passed along to Jasmine — she'll have full context when she reaches out. No need to start from scratch. 🤍", SPEEDS.long),
+    ...say("I have everything I need — I'll reach out personally and we'll pick up right where this left off. Can't wait to connect. 🤍", SPEEDS.long),
   ]);
 }
 
 // ─── INIT ──────────────────────────────────────────────────────────
 Q([
-  ...say("Hi — I'm the Two Wild Souls studio guide.", SPEEDS.text),
-  ...say("I'll help you figure out which session is right for you, show you exactly what's included, and give you a real starting investment. Takes about 3 minutes.", SPEEDS.long),
-  ...say("What kind of session are you exploring?", SPEEDS.short),
+  ...say("Hi! I'm Jasmine — owner and photographer at Two Wild Souls. 🤍", SPEEDS.text),
+  ...say("I put this together so you can get a real sense of what working with me looks like, what's included, and what to expect investment-wise. Takes about 3 minutes.", SPEEDS.long),
+  ...say("What kind of session are you thinking about?", SPEEDS.short),
   { type: 'chips', opts: [
     { label: 'Maternity',         action: 'session_maternity', init: () => { state.sessionType = 'Maternity'; } },
     { label: 'Newborn',           action: 'session_newborn',   init: () => { state.sessionType = 'Newborn'; } },
