@@ -285,7 +285,7 @@ const SERVICE_PAGES = {
 };
 
 // ─── STATE ─────────────────────────────────────────────────────────
-const state = { sessionType: null, timingStatus: null, timingNote: null, valueType: null, weeksPreg: null, newbornStatus: null, gradYear: null };
+const state = { sessionType: null, timingStatus: null, timingNote: null, valueType: null, gradYear: null };
 let queue = [], running = false, isDone = false;
 
 // ─── DOM HELPERS ───────────────────────────────────────────────────
@@ -694,21 +694,18 @@ function handleOpt(opt) {
   // SESSION
   if (a === 'session_maternity' || a === 'session_boudoir') {
     Q([
-      ...say("How exciting! How far along are you?", SPEEDS.short),
+      ...say("How exciting! Are you ready to book now, or planning ahead?", SPEEDS.short),
       { type: 'chips', opts: [
-        { label: 'Just found out — under 12 weeks', action: 'mat_u12' },
-        { label: '12 – 17 weeks',                   action: 'mat_u18' },
-        { label: '18 – 24 weeks',                   action: 'mat_ideal' },
-        { label: '25 – 30 weeks',                   action: 'mat_ideal' },
-        { label: '30+ weeks',                       action: 'mat_late' },
+        { label: 'Ready to book — let\'s lock in dates', action: 'mat_ready_now' },
+        { label: 'Planning ahead — want to know the process', action: 'mat_planning' },
       ]},
     ]);
   } else if (a === 'session_newborn') {
     Q([
-      ...say("Congratulations! Is your little one already here, or are you still expecting?", SPEEDS.short),
+      ...say("Congratulations! Is your little one already here, or are you planning ahead?", SPEEDS.short),
       { type: 'chips', opts: [
-        { label: 'Baby is already here', action: 'nb_born' },
-        { label: 'Still expecting',       action: 'nb_expecting' },
+        { label: 'Baby has arrived', action: 'nb_arrived' },
+        { label: 'Planning for newborn session',       action: 'nb_planning' },
       ]},
     ]);
   } else if (a === 'session_family') {
@@ -743,89 +740,37 @@ function handleOpt(opt) {
   }
 
   // MATERNITY TIMING
-  else if (a === 'mat_u12' || a === 'mat_u18') {
-    state.timingStatus = 'contact_later'; state.timingNote = 'Too early for maternity';
+  else if (a === 'mat_ready_now') {
+    state.timingStatus = 'contact_now'; state.timingNote = 'Maternity session — ready to book';
     Q([
-      ...say("Congratulations on the news! 🤍", SPEEDS.short),
-      ...say("The sweet spot for maternity photos is 28–34 weeks — you're beautifully visible, glowing, and still comfortable. We have a little time yet.", SPEEDS.long),
-      ...say("I'll note your timeline and reach out right around 18–20 weeks — the ideal planning window. Nothing to think about until then.", SPEEDS.text),
+      ...say("Perfect — let's make sure we find the right timing and setup for your session.", SPEEDS.short),
       { type: 'fn', fn: goEducation },
     ]);
-  } else if (a === 'mat_ideal') {
-    state.timingStatus = 'contact_now'; state.timingNote = 'Ideal maternity window';
+  } else if (a === 'mat_planning') {
+    state.timingStatus = 'contact_later'; state.timingNote = 'Maternity session — planning ahead';
     Q([
-      ...say("That's the sweet spot — you're right in the ideal window.", SPEEDS.short),
-      ...say("My calendar fills quickly this season. Let's make sure I save your date.", SPEEDS.short),
-      { type: 'fn', fn: goEducation },
-    ]);
-  } else if (a === 'mat_late') {
-    state.timingStatus = 'too_late'; state.timingNote = '30+ weeks, tight timeline';
-    Q([
-      ...say("Your timeline is getting close — but let's not rule anything out just yet.", SPEEDS.short),
-      ...say("I personally review late-timeline requests and occasionally have the right availability. Let's see if we're a fit first.", SPEEDS.text),
+      ...say("I love working with clients who plan ahead! 🤍", SPEEDS.short),
+      ...say("Maternity sessions are incredibly special, and I'm here to guide you through the entire process.", SPEEDS.text),
+      ...say("Let me show you how I work — then we can talk timing and availability.", SPEEDS.short),
       { type: 'fn', fn: goEducation },
     ]);
   }
 
   // NEWBORN
-  else if (a === 'nb_born') {
+  else if (a === 'nb_arrived') {
+    state.timingStatus = 'contact_now'; state.timingNote = 'Newborn has arrived';
     Q([
-      ...say("Congratulations! How old is baby right now?", SPEEDS.short),
-      { type: 'chips', opts: [
-        { label: 'Less than 1 week old',  action: 'nb_urgent' },
-        { label: '1 week or older',       action: 'nb_toolate' },
-        { label: 'Premie — born early',   action: 'nb_premie' },
-      ]},
-    ]);
-  } else if (a === 'nb_urgent') {
-    state.timingStatus = 'contact_now'; state.timingNote = 'Newborn under 1 week — book immediately';
-    Q([
-      ...say("You need to reach out to me right now — this is not an exaggeration. 🤍", SPEEDS.short),
-      ...say("Posed newborn portraits are only possible between 5–14 days old. I need at least a week to coordinate everything, which means today is the day.", SPEEDS.text),
-      ...say("I personally review every newborn inquiry. Let's get you on my list immediately.", SPEEDS.short),
+      ...say("That's wonderful news! 🤍", SPEEDS.short),
+      ...say("I'd love to help capture this special season. Let me show you how I work and what we can create together.", SPEEDS.text),
       { type: 'fn', fn: goEducation },
     ]);
-  } else if (a === 'nb_toolate') {
-    state.timingStatus = 'too_late'; state.timingNote = 'Newborn 1 week+ — posed window closed';
+  } else if (a === 'nb_planning') {
+    state.timingStatus = 'contact_later'; state.timingNote = 'Planning newborn session';
     Q([
-      ...say("The window for posed newborn portraits has passed — I need baby to be 5–14 days old, and at least a week to prepare.", SPEEDS.long),
-      ...say("The good news: I do beautiful lifestyle family sessions that capture this exact season. Baby, your family, your home — real and natural.", SPEEDS.long),
-      ...say("It's a completely different experience and just as meaningful. Want to explore that instead?", SPEEDS.short),
-      { type: 'chips', opts: [
-        { label: 'Yes — tell me about lifestyle sessions', action: 'nb_lifestyle_yes' },
-        { label: 'No thanks',                              action: 'nb_lifestyle_no'  },
-      ]},
-    ]);
-  } else if (a === 'nb_premie') {
-    state.timingStatus = 'contact_now'; state.timingNote = 'Premie — timeline varies';
-    Q([
-      ...say("Congratulations on your little one — premies have their own timeline and that's completely okay. 🤍", SPEEDS.text),
-      ...say("I base the ideal window on baby's adjusted age, size, and weight rather than birth date. I personally review every premie inquiry to make sure the timing is right.", SPEEDS.text),
-      ...say("Let's get your information so I can reach out directly.", SPEEDS.short),
+      ...say("How exciting! I love working with families who are planning ahead. 🤍", SPEEDS.short),
+      ...say("Newborn sessions are deeply personal, and I guide every step to make sure we capture this fleeting moment beautifully.", SPEEDS.text),
+      ...say("Let me show you my process and how we work together.", SPEEDS.short),
       { type: 'fn', fn: goEducation },
-    ]);
-  } else if (a === 'nb_lifestyle_yes') {
-    state.sessionType = 'Family'; state.timingStatus = 'contact_now'; state.timingNote = 'Redirected from newborn — lifestyle family';
-    Q([
-      ...say("I'd love that. Let me grab your info so I can reach out.", SPEEDS.short),
-      { type: 'fn', fn: goEducation },
-    ]);
-  } else if (a === 'nb_lifestyle_no') {
-    Q([
-      ...say("Completely understood. If anything changes or you have a future session in mind, I'd love to connect. 🤍", SPEEDS.text),
-    ]);
-    isDone = true;
-  } else if (a === 'nb_expecting') {
-    state.timingStatus = 'contact_now'; state.timingNote = 'Expecting — planning newborn';
-    Q([
-      ...say("Perfect timing — planning ahead is exactly right for newborns. The posed portrait window is 5–14 days from birth, and I need at least a week to coordinate everything.", SPEEDS.long),
-      ...say("If baby arrives early as a premie, I'll base the timeline on adjusted age, size, and weight — I review every premie case personally.", SPEEDS.long),
-      ...say("How far out are you?", SPEEDS.short),
-      { type: 'chips', opts: [
-        { label: 'Due within 4 weeks', action: 'timing_now' },
-        { label: '4 – 8 weeks out',    action: 'timing_now' },
-        { label: '8+ weeks out',       action: 'timing_now' },
-      ]},
     ]);
   }
 
@@ -980,8 +925,6 @@ async function handleFormSubmit() {
                   vip_contact_now:    timing === 'contact_now' ? 'yes' : 'no',
                   vip_timing_note:    state.timingNote    || '',
                   vip_value_type:     state.valueType     || '',
-                  vip_weeks_pregnant: state.weeksPreg     || '',
-                  vip_newborn_status: state.newbornStatus || '',
                   vip_grad_year:      state.gradYear      || '',
                   vip_source:         'Studio Guide Chat',
                 }
